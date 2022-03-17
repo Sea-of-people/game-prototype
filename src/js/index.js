@@ -41,34 +41,40 @@ function createScene() {
 
 
     // second parameter is the target to follow
-    let followCamera = createFollowCamera(scene, tank);
-    scene.activeCamera = followCamera;
+    // let followCamera = createFollowCamera(scene, tank);
 
+
+    let fixCamera = createFixCamera(scene);
+    scene.activeCamera = fixCamera;
     createLights(scene);
 
     return scene;
 }
 
+function createFixCamera(scene) {
+    let camera = new BABYLON.FreeCamera("fixCamera", new BABYLON.Vector3(0, 50, 0), scene);
+    camera.cameraDirection = new BABYLON.Vector3(0,1,1);
+    return camera;
+}
+
+
 function createGround(scene) {
     const groundOptions = {
         width: 2000,
         height: 2000,
-        subdivisions: 20,
-        minHeight: 0,
-        maxHeight: 100,
-        onReady: onGroundCreated
+        subdivisions: 20
     };
     //scene is optional and defaults to the current scene
-    const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/hmap1.png', groundOptions, scene);
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", groundOptions, scene);
+    //const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/hmap1.png', groundOptions, scene);
 
-    function onGroundCreated() {
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
-        ground.material = groundMaterial;
-        // to be taken into account by collision detection
-        ground.checkCollisions = true;
-        //groundMaterial.wireframe=true;
-    }
+    const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+    groundMaterial.diffuseColor = new BABYLON.Color3(0.878, 0.858, 0.745);
+    //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
+    ground.material = groundMaterial;
+    // to be taken into account by collision detection
+    ground.checkCollisions = true;
+    //groundMaterial.wireframe=true;
 
     return ground;
 }

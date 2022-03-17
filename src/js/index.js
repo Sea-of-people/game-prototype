@@ -1,4 +1,4 @@
-import * as crowd from "./crowd.js";
+import generateCrowd from './crowd.js';
 
 let canvas;
 let engine;
@@ -8,18 +8,19 @@ let inputStates = {};
 
 window.onload = startGame;
 
+
 function startGame() {
     canvas = document.querySelector("#myCanvas");
     engine = new BABYLON.Engine(canvas, true);
     scene = createScene();
 
+    const axes = new BABYLON.AxesViewer(scene, 20);
     // modify some default settings (i.e pointer events to prevent cursor to go
     // out of the game window)
     modifySettings();
 
     let tank = scene.getMeshByName("heroTank");
     let canon = scene.getMeshByName("cylinder");
-
 
     engine.runRenderLoop(() => {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
@@ -32,36 +33,31 @@ function startGame() {
 
 function createScene() {
     let scene = new BABYLON.Scene(engine);
+    scene.enablePhysics();
+
     let ground = createGround(scene);
     let freeCamera = createFreeCamera(scene);
 
     let tank = createTank(scene);
     let canon = createCanon(scene, tank);
-    // let crowd = crowd.generateCrowd(10, scene, ground.wid);
-
+    let crowd = generateCrowd(50, scene, 200, 200);
 
     // second parameter is the target to follow
-    // let followCamera = createFollowCamera(scene, tank);
+    let followCamera = createFollowCamera(scene, ground);
 
-
-    let fixCamera = createFixCamera(scene);
-    scene.activeCamera = fixCamera;
+    scene.activeCamera = followCamera;
+    scene.collisionsEnabled = true;
     createLights(scene);
 
-    return scene;
-}
 
-function createFixCamera(scene) {
-    let camera = new BABYLON.FreeCamera("fixCamera", new BABYLON.Vector3(0, 50, 0), scene);
-    camera.cameraDirection = new BABYLON.Vector3(0,1,1);
-    return camera;
+    return scene;
 }
 
 
 function createGround(scene) {
     const groundOptions = {
-        width: 2000,
-        height: 2000,
+        width: 200,
+        height: 200,
         subdivisions: 20
     };
     //scene is optional and defaults to the current scene
@@ -76,22 +72,73 @@ function createGround(scene) {
     ground.checkCollisions = true;
     //groundMaterial.wireframe=true;
 
+
+    const wallOptions = {
+        width: 200,
+        height: 20,
+        subdivision: 20
+    }
+    const wallMaterial = new BABYLON.StandardMaterial("wallMaterial", scene, wallOptions);
+    wallMaterial.diffuseColor = new BABYLON.Color3(0.717, 0.521, 0.521);
+    wallMaterial.backFaceCulling = false;
+
+
+    const wall = BABYLON.MeshBuilder.CreatePlane("wall", wallOptions, scene);
+    const wall1 = BABYLON.MeshBuilder.CreatePlane("wall1", wallOptions, scene);
+    const wall2 = BABYLON.MeshBuilder.CreatePlane("wall2", wallOptions, scene);
+    const wall3 = BABYLON.MeshBuilder.CreatePlane("wall3", wallOptions, scene);
+    // wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.PlaneImpostor, { mass: 0 }, scene);
+    // wall1.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.PlaneImpostor, { mass: 0 }, scene);
+    // wall2.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.PlaneImpostor, { mass: 0 }, scene);
+    // wall3.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.PlaneImpostor, { mass: 0 }, scene);
+    wall.checkCollisions = true;
+    wall1.checkCollisions = true;
+    wall2.checkCollisions = true;
+    wall3.checkCollisions = true;
+
+
+    wall.material = wallMaterial;
+    wall1.material = wallMaterial;
+    wall2.material = wallMaterial;
+    wall3.material = wallMaterial;
+
+    wall.position = new BABYLON.Vector3(0, 10, 100);
+    wall1.position = new BABYLON.Vector3(0, 10, -100);
+    wall2.position = new BABYLON.Vector3(-100, 10, 0);
+    wall3.position = new BABYLON.Vector3(100, 10, 0);
+
+    wall2.rotation.y = Math.PI / 2;
+    wall3.rotation.y = Math.PI / 2;
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(
+        ground,
+        BABYLON.PhysicsImpostor.HeightmapImpostor, {
+            mass: 0
+        },
+        scene
+    );
+    
     return ground;
 }
 
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
-    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 0), scene);
-
+    let light = new BABYLON.HemisphericLight("dir", new BABYLON.Vector3(-20, 20, 0), scene);
+    let light2 = new BABYLON.HemisphericLight("dir2", new BABYLON.Vector3(0, 0, 20), scene);
+    let light3 = new BABYLON.HemisphericLight("dir3", new BABYLON.Vector3(20, 20, 0), scene);
+    light.intensity = 0.5;
+    light2.intensity = 0.5;
+    light3.intensity = 0.5;
+    // let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 1), scene);
 }
 
 function createFreeCamera(scene) {
-    let camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(0, 50, 0), scene);
+    let camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(-5, 250, -40), scene);
     camera.attachControl(canvas);
+    camera.cameraDirection.z = Math.PI / 4;
     // prevent camera to cross ground
     camera.checkCollisions = true;
     // avoid flying with the camera
-    camera.applyGravity = true;
+    // camera.applyGravity = true;
 
     // Add extra keys for camera movements
     // Need the ascii code of the extra key(s). We use a string method here to get the ascii code
@@ -107,20 +154,28 @@ function createFreeCamera(scene) {
 }
 
 function createFollowCamera(scene, target) {
-    let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
+    let camera = new BABYLON.FollowCamera("tankFollowCamera", new BABYLON.Vector3(0, 200, -70), scene, target);
 
     camera.radius = 50; // how far from the object to follow
-    camera.heightOffset = 14; // how high above the object to place the camera
+    camera.heightOffset = 1; // how high above the object to place the camera
     camera.rotationOffset = 180; // the viewing angle
-    camera.cameraAcceleration = .1; // how fast to move
-    camera.maxCameraSpeed = 5; // speed limit
-
+    camera.cameraAcceleration = 0; // how fast to move
+    camera.maxCameraSpeed = 0; // speed limit
+    // camera.
+    camera.position.z -= 40;
+    camera.position.y += 50;
+    //camera.setTarget(new BABYLON.Vector3(100, 0, 0));
+    // camera.setPosition(new BABYLON.Vector3(0, 0, 20));
     return camera;
 }
 
 function createCanon(scene, tank) {
     var cylinder = BABYLON.Mesh.CreateCylinder("cylinder", 5, 1, 1, 6, 1, scene, false, BABYLON.Mesh.DEFAULTSIDE);
-    var box = BABYLON.MeshBuilder.CreateBox("box", {height: 1, depth: 4, width: 4}, scene);
+    var box = BABYLON.MeshBuilder.CreateBox("box", {
+        height: 1,
+        depth: 4,
+        width: 4
+    }, scene);
     // cylinder.position.y = tank.position.y +1;
 
     // box.parent = cylinder;
@@ -186,7 +241,11 @@ function createCanon(scene, tank) {
 let zMovement = 5;
 
 function createTank(scene) {
-    let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {height: 1, depth: 6, width: 6}, scene);
+    let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {
+        height: 1,
+        depth: 6,
+        width: 6
+    }, scene);
 
     let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
     tankMaterial.diffuseColor = new BABYLON.Color3.Red;
@@ -195,7 +254,7 @@ function createTank(scene) {
 
     // By default the box/tank is in 0, 0, 0, let's change that...
     tank.position.y = 0.6;
-    tank.speed = 1;
+    tank.speed = 0.4;
     tank.frontVector = new BABYLON.Vector3(0, 0, 1);
 
     tank.move = () => {
@@ -335,4 +394,3 @@ function modifySettings() {
         }
     }, false);
 }
-

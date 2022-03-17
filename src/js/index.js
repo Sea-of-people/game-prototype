@@ -1,3 +1,5 @@
+import * as crowd from "./crowd.js";
+
 let canvas;
 let engine;
 let scene;
@@ -35,6 +37,7 @@ function createScene() {
 
     let tank = createTank(scene);
     let canon = createCanon(scene, tank);
+    // let crowd = crowd.generateCrowd(10, scene, ground.wid);
 
 
     // second parameter is the target to follow

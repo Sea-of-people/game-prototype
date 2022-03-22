@@ -4,10 +4,9 @@ export default function generateCrowd(count, scene, maxWidth, maxHeight) {
 
         let plusOrMinus = Math.random() * 195 % 190 - 95;
         let plusOrMinus2 = Math.random() * 195 % 190 - 95;
-        // console.log(plusOrMinus);
-        // let plusOrMinus2 = Math.random() % 200 + 100;
         let sphere = BABYLON.Mesh.CreateSphere(`sphere${i}`, 4, 10, scene);
-        sphere.position = new BABYLON.Vector3(plusOrMinus, 6, plusOrMinus2);
+        
+        sphere.position = new BABYLON.Vector3(plusOrMinus, 20, plusOrMinus2);
         // sphere.checkCollisions = true;
         sphere.physicsImpostor = new BABYLON.PhysicsImpostor(
             sphere,

@@ -7,7 +7,8 @@ function createScene(engine, canvas) {
 
     let debugCamera = createDebugCamera(scene, canvas);
     let followCamera = createFollowCamera(scene, ground);
-    scene.activeCamera = debugCamera;
+    scene.activeCamera = followCamera;
+    // scene.activeCamera = debugCamera;
     scene.collisionsEnabled = true;
     createLights(scene);
 

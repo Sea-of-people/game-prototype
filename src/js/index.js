@@ -4,7 +4,7 @@ import generateCrowd from "./crowd.js";
 let canvas;
 let engine;
 let scene;
-var crowdCount = 0;
+
 const maxCrowd = 30;
 window.onload = startGame;
 
@@ -12,6 +12,7 @@ function startGame() {
   canvas = document.querySelector("#myCanvas");
   engine = new BABYLON.Engine(canvas, true);
   scene = createScene(engine, canvas);
+
   let tank = new Tank(scene);
 
   const axes = new BABYLON.AxesViewer(scene, 20);
@@ -23,9 +24,8 @@ function startGame() {
   // let canon = scene.getMeshByName("cylinder");
   let isGenerating = true;
   engine.runRenderLoop(() => {
-    if (isGenerating && crowdCount < maxCrowd) {
-      generateCrowd(crowdCount, scene, 200, 20, 200);
-      crowdCount++;
+    if (isGenerating && scene.sphereList.length < maxCrowd) {
+      scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, 200, 20, 200));
       isGenerating = false;
       setTimeout(() => {
         isGenerating = true;
@@ -35,6 +35,11 @@ function startGame() {
     // console.log(deltaTime);
     tank.moveTank();
     tank.moveTurret();
+    // console.log(scene.sphereList);
+    for (let i = 0; i < scene.sphereList.length;i++) {
+      let sphere = scene.sphereList[i];
+      sphere.move();
+    }
     scene.render();
   });
 }

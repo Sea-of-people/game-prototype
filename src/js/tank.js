@@ -14,6 +14,9 @@ class Tank {
             width: 6
         }, scene);
 
+
+        scene.sphereList = [];
+
         let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
         tankMaterial.diffuseColor = new BABYLON.Color3.Red;
         tankMaterial.emissiveColor = new BABYLON.Color3.Blue;

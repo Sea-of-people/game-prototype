@@ -1,6 +1,3 @@
-import generateCrowd from './crowd.js';
-
-
 function createScene(engine, canvas) {
     let scene = new BABYLON.Scene(engine);
     scene.enablePhysics();
@@ -10,8 +7,6 @@ function createScene(engine, canvas) {
 
     let debugCamera = createDebugCamera(scene, canvas);
     let followCamera = createFollowCamera(scene, ground);
-
-    let crowd = generateCrowd(50, scene, 200, 200);
     scene.activeCamera = followCamera;
     scene.collisionsEnabled = true;
     createLights(scene);
@@ -46,7 +41,7 @@ function createGround(scene) {
         },
         scene
     );
-    
+
     return ground;
 }
 

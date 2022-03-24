@@ -5,7 +5,7 @@ class Tank {
         this.inputStates = {};
         this.createTank(scene);
         this.createCannon(scene);
-        this.bounder = this.createBounder();
+        this.createBounder();
         this.tankEvent();
 
         this.bounder.tankMesh = this.tank;
@@ -93,32 +93,32 @@ class Tank {
             width: 7
         };
 
-        let bounder = new BABYLON.MeshBuilder.CreateBox("bounderTank", bounderOptions, this.scene);
+        this.bounder = new BABYLON.MeshBuilder.CreateBox("bounderTank", bounderOptions, this.scene);
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
-        bounder.position = new BABYLON.Vector3(20, 2, 20);
+        this.bounder.position = new BABYLON.Vector3(20, 2, 20);
         // bounder.position = this.tank.position.clone();
 
         // console.log("in creation");
         bounderMaterial.alpha = .4;
-        bounder.material = bounderMaterial;
-        bounder.material.diffuseColor = new BABYLON.Color3.Random();
-        bounder.checkCollisions = true;
+        this.bounder.material = bounderMaterial;
+        this.bounder.material.diffuseColor = new BABYLON.Color3.Random();
+        this.bounder.checkCollisions = true;
         // bounder.material.wireframe = true;
         // bounder.parent = this.tank;
 
-        bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
-            bounder,
+        this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
+            this.bounder,
             BABYLON.PhysicsImpostor.BoxImpostor, {
                 mass: 100,
-                friction: 0,
+                friction: 1,
                 restitution: 0.8
             },
             this.scene
         );
 
-        bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
-        return bounder;
+        this.bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
+        // return bounder;
     }
 
     moveTank() {

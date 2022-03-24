@@ -94,7 +94,6 @@ class Tank {
         };
 
         let bounder = new BABYLON.MeshBuilder.CreateBox("bounderTank", bounderOptions, this.scene);
-
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
         bounder.position = new BABYLON.Vector3(20, 2, 20);
@@ -111,53 +110,59 @@ class Tank {
         bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             bounder,
             BABYLON.PhysicsImpostor.BoxImpostor, {
-                mass: 2,
-                friction: 5,
+                mass: 100,
+                friction: 0,
                 restitution: 0.8
             },
             this.scene
         );
 
+        bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
         return bounder;
     }
 
     moveTank() {
+        if (!this.bounder) return;
+
+        this.tank.position = this.bounder.position.clone();
+        this.tank.rotation = this.bounder.rotation.clone();
+
         this.xMovement = 0;
         this.yMovement = 0;
         this.zMovement = 0;
 
-        if (this.tank.position.y > 2) {
+        if (this.bounder.position.y > 2) {
             this.zMovement = 0;
             this.yMovement = -2;
         }
 
         if (this.inputStates.up) {
-            this.tank.moveWithCollisions(this.tank.frontVector.multiplyByFloats(this.tank.speed, this.tank.speed, this.tank.speed));
+            this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(this.tank.speed, this.tank.speed, this.tank.speed));
         }
         if (this.inputStates.down) {
-            this.tank.moveWithCollisions(this.tank.frontVector.multiplyByFloats(-this.tank.speed, -this.tank.speed, -this.tank.speed));
+            this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(-this.tank.speed, -this.tank.speed, -this.tank.speed));
         }
         if (this.inputStates.left) {
-            this.tank.rotation.y -= 0.02;
-            this.tank.frontVector = new BABYLON.Vector3(Math.sin(this.tank.rotation.y), 0, Math.cos(this.tank.rotation.y));
+            this.bounder.rotation.y -= 0.02;
+            this.bounder.frontVector = new BABYLON.Vector3(Math.sin(this.bounder.rotation.y), 0, Math.cos(this.bounder.rotation.y));
         }
         if (this.inputStates.right) {
-            this.tank.rotation.y += 0.02;
-            this.tank.frontVector = new BABYLON.Vector3(Math.sin(this.tank.rotation.y), 0, Math.cos(this.tank.rotation.y));
+            this.bounder.rotation.y += 0.02;
+            this.bounder.frontVector = new BABYLON.Vector3(Math.sin(this.bounder.rotation.y), 0, Math.cos(this.bounder.rotation.y));
         }
     }
 
 
-    moveTurret() {
-        if (this.inputStates.fireLeft) {
-            this.turret.rotation.y -= 0.01;
-            this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
-        }
-        if (this.inputStates.fireRight) {
-            this.turret.rotation.y += 0.01;
-            this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
-        }
-    }
+    // moveTurret() {
+    //     if (this.inputStates.fireLeft) {
+    //         this.turret.rotation.y -= 0.01;
+    //         this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
+    //     }
+    //     if (this.inputStates.fireRight) {
+    //         this.turret.rotation.y += 0.01;
+    //         this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
+    //     }
+    // }
 
     tankEvent() {
         this.inputStates.left = false;

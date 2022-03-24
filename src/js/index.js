@@ -34,7 +34,7 @@ function startGame() {
     let deltaTime = engine.getDeltaTime(); // remind you something ?
     // console.log(deltaTime);
     tank.moveTank();
-    tank.moveTurret();
+    // tank.moveTurret();
     // console.log(scene.sphereList);
     for (let i = 0; i < scene.sphereList.length;i++) {
       let sphere = scene.sphereList[i];

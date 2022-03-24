@@ -1,10 +1,14 @@
 class Tank {
 
     constructor(scene) {
+        this.scene = scene;
         this.inputStates = {};
         this.createTank(scene);
         this.createCannon(scene);
+        this.bounder = this.createBounder();
         this.tankEvent();
+
+        this.bounder.tankMesh = this.tank;
     }
 
     createTank(scene) {
@@ -59,6 +63,7 @@ class Tank {
             // collision uses by default "ellipsoids"
 
             let yMovement = 0;
+            let zMovement = 0;
 
             if (cylinder.position.y > 2) {
                 zMovement = 0;
@@ -76,6 +81,41 @@ class Tank {
                 box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
             }
         }
+    }
+
+    createBounder() {
+        const bounderOptions = {
+            height: 5,
+            depth: 7,
+            width: 7
+        };
+
+        let bounder = new BABYLON.MeshBuilder.CreateBox("bounderTank", bounderOptions, this.scene);
+
+        let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
+
+        bounder.position = new BABYLON.Vector3(20, 2, 20);
+        // bounder.position = this.tank.position.clone();
+
+        // console.log("in creation");
+        bounderMaterial.alpha = .4;
+        bounder.material = bounderMaterial;
+        bounder.material.diffuseColor = new BABYLON.Color3.Random();
+        bounder.checkCollisions = true;
+        // bounder.material.wireframe = true;
+        // bounder.parent = this.tank;
+
+        bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
+            bounder,
+            BABYLON.PhysicsImpostor.BoxImpostor, {
+                mass: 2,
+                friction: 5,
+                restitution: 0.8
+            },
+            this.scene
+        );
+
+        return bounder;
     }
 
     moveTank() {

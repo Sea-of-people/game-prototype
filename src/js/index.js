@@ -4,8 +4,8 @@ import generateCrowd from "./crowd.js";
 let canvas;
 let engine;
 let scene;
-var crowdCount = 0;
-const maxCrowd = 30;
+let crowdCount = 0;
+const maxCrowd = 100;
 window.onload = startGame;
 
 function startGame() {
@@ -29,7 +29,7 @@ function startGame() {
       isGenerating = false;
       setTimeout(() => {
         isGenerating = true;
-      }, 500);
+      }, 50);
     }
     let deltaTime = engine.getDeltaTime(); // remind you something ?
     // console.log(deltaTime);

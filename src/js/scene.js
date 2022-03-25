@@ -1,6 +1,8 @@
 function createScene(engine, canvas) {
     let scene = new BABYLON.Scene(engine);
-    scene.enablePhysics();
+    scene.enablePhysics(
+        new BABYLON.Vector3(0, -9.81, 0)
+    );
 
     let ground = createGround(scene);
     let walls = createWalls(scene);

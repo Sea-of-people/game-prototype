@@ -27,7 +27,7 @@ class Tank {
         this.tank.material = tankMaterial;
 
         // By default the box/tank is in 0, 0, 0, let's change that...
-        this.tank.position.y = 0.6;
+        this.tank.position.y = 50;
         this.tank.speed = 0.4;
         this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
     }
@@ -110,9 +110,9 @@ class Tank {
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
             BABYLON.PhysicsImpostor.BoxImpostor, {
-                mass: 100,
+                mass: 1000,
                 friction: 1,
-                restitution: 0.8
+                restitution: 0.5,
             },
             this.scene
         );

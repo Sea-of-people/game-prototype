@@ -25,7 +25,7 @@ function startGame() {
   let isGenerating = true;
   engine.runRenderLoop(() => {
     if (isGenerating && scene.sphereList.length < maxCrowd) {
-      scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, 200, 20, 200));
+      scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, 200, 100, 200));
       isGenerating = false;
       setTimeout(() => {
         isGenerating = true;

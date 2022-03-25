@@ -13,7 +13,7 @@ function createScene(engine, canvas) {
     // scene.activeCamera = debugCamera;
     scene.collisionsEnabled = true;
     createLights(scene);
-    var background = new BABYLON.Layer("back", "./assets/background2.jpg", scene);
+    var background = new BABYLON.Layer("back", "./assets/background.jpg", scene);
     background.isBackground = true;
     background.texture.level = 0;
 

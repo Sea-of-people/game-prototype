@@ -12,7 +12,7 @@ class Sphere {
     this._maxX = maxX;
     this._y = y;
     this._maxZ = maxZ;
-    this._diameter = 10;
+    this._diameter = 8;
     this._rayon = this._diameter / 2;
     this._scene = scene;
     this.sphere = BABYLON.Mesh.CreateSphere(name, 4, this._diameter, scene);
@@ -22,21 +22,23 @@ class Sphere {
   }
 
   configureSphere() {
-    let x =
-      ((Math.random() * (this._maxX - this._rayon)) %
-        (this._maxX - this._diameter)) -
-      (this._maxX / 2 - this._rayon);
-    let z =
-      ((Math.random() * (this._maxZ - this._rayon)) %
-        (this._maxZ - this._diameter)) -
-      (this._maxZ / 2 - this._rayon);
-    this.sphere.position = new BABYLON.Vector3(x, this._y, z);
+    // let x =
+    //   ((Math.random() * (this._maxX - this._rayon)) %
+    //     (this._maxX - this._diameter)) -
+    //   (this._maxX / 2 - this._rayon);
+    // let z =
+    //   ((Math.random() * (this._maxZ - this._rayon)) %
+    //     (this._maxZ - this._diameter)) -
+    //   (this._maxZ / 2 - this._rayon);
+    let spawnSphere = this._scene.getMeshByName("SpawnSpheres1");
+    // this.sphere.position = new BABYLON.Vector3(x, this._y, z);
+    this.sphere.position = spawnSphere.position.clone();
     // sphere.checkCollisions = true;
     this.sphere.physicsImpostor = new BABYLON.PhysicsImpostor(
       this.sphere,
       BABYLON.PhysicsImpostor.SphereImpostor,
       {
-        mass: 1,
+        mass: 3,
         // restitution: 0.9,
         gravity: new BABYLON.Vector3(0, -9.81, 0),
       },
@@ -49,6 +51,10 @@ class Sphere {
     sphereMaterial.diffuseColor = new BABYLON.Color3.Random();
     sphereMaterial.emissiveColor = new BABYLON.Color3.Random();
     this.sphere.material = sphereMaterial;
+    this.sphere.physicsImpostor.applyImpulse(
+        new BABYLON.Vector3(15, -10, 0),
+        this.sphere.getAbsolutePosition()
+    );
   }
 
   move() {

@@ -19,16 +19,17 @@ function createScene(engine, canvas) {
 
     BABYLON.SceneLoader.ImportMesh("", "./models/", "scene_test_save.babylon", scene, (meshes)=> {
         console.log('meshes', meshes);
-        let glassPanel = meshes[1];
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-        groundMaterial.alpha = 0.4;
-        glassPanel.material = groundMaterial;
+
+        // let glassPanel = meshes[1];
+        // const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        // groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
+        // groundMaterial.alpha = 0.4;
+        // glassPanel.material = groundMaterial;
 
         // console.log("impostors", meshes[2].physicsImpostor);
-        // let terrain = meshes[2];
-        // terrain.physicsImpostor = new BABYLON.PhysicsImpostor(
-        //     terrain,
+        // let terrain = meshes[2];len
+        // meshes[0].physicsImpostor = new BABYLON.PhysicsImpostor(
+        //     meshes[0],
         //     BABYLON.PhysicsImpostor.MeshImpostor, {
         //         mass: 0,
         //         friction: 5,

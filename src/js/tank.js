@@ -27,7 +27,7 @@ class Tank {
         this.tank.material = tankMaterial;
 
         // By default the box/tank is in 0, 0, 0, let's change that...
-        this.tank.position.y = 0.6;
+        this.tank.position.y = 2;
         this.tank.speed = 0.4;
         this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
     }
@@ -88,16 +88,15 @@ class Tank {
 
     createBounder() {
         const bounderOptions = {
-            height: 5,
-            depth: 7,
-            width: 7
+            diameter: 7,
+            segments: 30
         };
 
-        this.bounder = new BABYLON.MeshBuilder.CreateBox("bounderTank", bounderOptions, this.scene);
+        this.bounder = new BABYLON.MeshBuilder.CreateSphere("bounderTank", bounderOptions, this.scene);
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
-        this.bounder.position = new BABYLON.Vector3(20, 2, 20);
-        // bounder.position = this.tank.position.clone();
+        // this.bounder.position = new BABYLON.Vector3(20, 2, 20);
+        this.bounder.position = this.tank.position.clone();
 
         // console.log("in creation");
         bounderMaterial.alpha = .4;
@@ -109,7 +108,7 @@ class Tank {
 
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
-            BABYLON.PhysicsImpostor.BoxImpostor, {
+            BABYLON.PhysicsImpostor.SphereImpostor, {
                 mass: 100,
                 friction: 1,
                 restitution: 0.8

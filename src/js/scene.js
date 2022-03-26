@@ -17,6 +17,26 @@ function createScene(engine, canvas) {
     background.isBackground = true;
     background.texture.level = 0;
 
+    BABYLON.SceneLoader.ImportMesh("", "./models/", "scene_test_save.babylon", scene, (meshes)=> {
+        console.log('meshes', meshes);
+        let glassPanel = meshes[1];
+        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
+        groundMaterial.alpha = 0.4;
+        glassPanel.material = groundMaterial;
+
+        // console.log("impostors", meshes[2].physicsImpostor);
+        // let terrain = meshes[2];
+        // terrain.physicsImpostor = new BABYLON.PhysicsImpostor(
+        //     terrain,
+        //     BABYLON.PhysicsImpostor.MeshImpostor, {
+        //         mass: 0,
+        //         friction: 5,
+        //         restitution: 0.5
+        //     }, scene
+        // )
+    })
+
     return scene;
 }
 
@@ -47,25 +67,6 @@ function createGround(scene) {
         },
         scene
     );
-
-    BABYLON.SceneLoader.ImportMesh("", "./assets/", "scene_test_save.babylon", scene, (meshes)=> {
-        console.log('meshes', meshes);
-        let glassPanel = meshes[1];
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-        groundMaterial.alpha = 0.4;
-        glassPanel.material = groundMaterial;
-        // console.log("impostors", meshes[2].physicsImpostor);
-        // let terrain = meshes[2];
-        // terrain.physicsImpostor = new BABYLON.PhysicsImpostor(
-        //     terrain,
-        //     BABYLON.PhysicsImpostor.MeshImpostor, {
-        //         mass: 0,
-        //         friction: 5,
-        //         restitution: 0.5
-        //     }, scene
-        // )
-    })
 
     return ground;
 }

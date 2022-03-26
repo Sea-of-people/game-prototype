@@ -26,14 +26,15 @@ function startGame() {
     let isGenerating = true;
     var assetsManager = new BABYLON.AssetsManager(scene);
     var meshTask = assetsManager.addMeshTask(
-        "meshesTasks", "meshes", "models/", "scene_prototype.babylon");
-    meshTask.onSuccess = function (task) {
-        let glassPanel = task.loadedMeshes[0];
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-        groundMaterial.alpha = 0.4;
-        glassPanel.material = groundMaterial;
-    }
+        "meshesTasks", "meshes", "./models/", "scene_prototype.babylon");
+    // meshTask.onSuccess = function (task) {
+    //     let glassPanel = task.loadedMeshes[0];
+    //     console.log(task);
+    //     const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+    //     groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
+    //     groundMaterial.alpha = 0.4;
+    //     glassPanel.material = groundMaterial;
+    // }
     BABYLON.SceneLoader.ImportMesh("", "./models/",
         "scene_prototype.babylon", scene, (meshes) => {
             console.log('meshes', meshes);
@@ -43,18 +44,35 @@ function startGame() {
             groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
             groundMaterial.alpha = 0.4;
             glassPanel.material = groundMaterial;
-        },
-        (remainingCount, totalCount, lastFinishedTask) => {
-            engine.loadingUIText = 'We are loading the scene. ' + remainingCount + ' out of ' + totalCount + ' items still need to be loaded.';
         });
+    assetsManager.onProgress = function (
+        remainingCount,
+        totalCount,
+        lastFinishedTask
+    ) {
+        engine.loadingUIText =
+            "We are loading the scene. " +
+            remainingCount +
+            " out of " +
+            totalCount +
+            " items still need to be loaded.";
+        console.log(
+            "We are loading the scene. " +
+            remainingCount +
+            " out of " +
+            totalCount +
+            " items still need to be loaded." + lastFinishedTask.name
+        );
+    };
     assetsManager.onFinish = function (tasks) {
+        console.log("Starting game...");
         engine.runRenderLoop(() => {
             if (isGenerating && scene.sphereList.length < maxCrowd) {
                 scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, 200, 50, 200));
                 isGenerating = false;
                 setTimeout(() => {
                     isGenerating = true;
-                }, 2000);
+                }, 1500);
             }
             let deltaTime = engine.getDeltaTime(); // remind you something ?
             tank.moveTank();

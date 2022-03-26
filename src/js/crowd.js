@@ -39,7 +39,7 @@ class Sphere {
       BABYLON.PhysicsImpostor.SphereImpostor,
       {
         mass: 3,
-        // restitution: 0.9,
+        restitution: 0.9,
         gravity: new BABYLON.Vector3(0, -9.81, 0),
       },
       this._scene
@@ -68,8 +68,8 @@ class Sphere {
     let direction = tank.position.subtract(this.sphere.position);
     let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
     let dir = direction.normalize();
-    dir.x *= 0.2;
-    dir.z *= 0.2;
+    dir.x *= 0.4;
+    dir.z *= 0.4;
     // console.log(this.sphere.getDirection(this.sphere.position));
     if (distance < 50) {
       this.sphere.physicsImpostor.applyImpulse(

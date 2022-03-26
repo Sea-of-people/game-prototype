@@ -17,14 +17,14 @@ function createScene(engine, canvas) {
     background.isBackground = true;
     background.texture.level = 0;
 
-    BABYLON.SceneLoader.ImportMesh("", "./models/", "scene_test_save.babylon", scene, (meshes)=> {
+    BABYLON.SceneLoader.ImportMesh("", "./models/", "scene_prototype.babylon", scene, (meshes)=> {
         console.log('meshes', meshes);
 
-        // let glassPanel = meshes[1];
-        // const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        // groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-        // groundMaterial.alpha = 0.4;
-        // glassPanel.material = groundMaterial;
+        let glassPanel = meshes[0];
+        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
+        groundMaterial.alpha = 0.4;
+        glassPanel.material = groundMaterial;
 
         // console.log("impostors", meshes[2].physicsImpostor);
         // let terrain = meshes[2];len

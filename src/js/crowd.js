@@ -55,12 +55,7 @@ class Sphere {
     );
   }
 
-  move() {
-    // as move can be called even before the bbox is ready.
-    // if (!this.sphere.bounder) return;
-
-    // console.log(`${this._name}`);
-    // follow the tank
+  attract() {
     let tank = this._scene.getMeshByName("BB_Unit");
     // let's compute the direction vector that goes from Dude to the tank
     let direction = tank.position.subtract(this.sphere.position);
@@ -71,8 +66,26 @@ class Sphere {
     // console.log(this.sphere.getDirection(this.sphere.position));
     if (distance < 70) {
       this.sphere.physicsImpostor.applyImpulse(
-        dir,
-        this.sphere.getAbsolutePosition()
+          dir,
+          this.sphere.getAbsolutePosition()
+      );
+    }
+  }
+
+  pushAway() {
+    let tank = this._scene.getMeshByName("BB_Unit");
+    // let's compute the direction vector that goes from Dude to the tank
+    let direction = tank.position.subtract(this.sphere.position);
+    let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
+    let dir = direction.normalize();
+    dir.x *= 150;
+    dir.z *= 150;
+    dir = new BABYLON.Vector3(-dir.x, dir.y, -dir.z)
+    // console.log(this.sphere.getDirection(this.sphere.position));
+    if (distance < 70) {
+      this.sphere.physicsImpostor.applyImpulse(
+          dir,
+          this.sphere.getAbsolutePosition()
       );
     }
   }

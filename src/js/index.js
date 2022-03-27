@@ -1,5 +1,5 @@
 import Tank from "./tank.js";
-import createScene from "./scene.js";
+import {createScene, createFollowCamera, createDebugCamera} from "./scene.js";
 import generateCrowd from "./crowd.js";
 
 let canvas;
@@ -30,6 +30,7 @@ function startGame() {
     var bbTask = assetsManager.addMeshTask(
         "bb_unitTask", "", "./models/", "bb-unit.babylon");
     meshTask.onSuccess = function (task) {
+        console.log(task.loadedMeshes);
         let glassPanel = scene.getMeshByName("GlassPanel");
         const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
         groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
@@ -131,22 +132,37 @@ function startGame() {
 
     assetsManager.onFinish = function (tasks) {
         let tank = new Tank(scene);
+        let debugCamera = createDebugCamera(scene, canvas);
+        // let followCamera = createFollowCamera(scene, scene.getMeshByName("Cuve"));
+        // scene.activeCamera = followCamera;
+        scene.activeCamera = debugCamera;
 
 
         console.log("Starting game...");
         engine.runRenderLoop(() => {
             if (isGenerating && scene.sphereList.length < maxCrowd) {
-                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnRamp1", new BABYLON.Vector3(15, -10, 0)));
-                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnRamp2", new BABYLON.Vector3(0, -10, 15)));
-                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnRamp3", new BABYLON.Vector3(0, -10, -15)));
+                scene.sphereList.push(
+                    generateCrowd(
+                        scene.sphereList.length,
+                        scene,
+                        "SpawnRamp1",
+                        new BABYLON.Vector3(20, -15, 0)));
+                scene.sphereList.push(
+                    generateCrowd(scene.sphereList.length,
+                        scene, "SpawnRamp2",
+                        new BABYLON.Vector3(0, -15, 20)));
+                scene.sphereList.push(
+                    generateCrowd(scene.sphereList.length,
+                        scene, "SpawnRamp3",
+                        new BABYLON.Vector3(0, -15, -20)));
                 isGenerating = false;
                 setTimeout(() => {
                     isGenerating = true;
-                }, 1500);
+                }, 2000);
             }
             let deltaTime = engine.getDeltaTime(); // remind you something ?
-            tank.moveTank();
-            tank.skill();
+
+            tank.activateEvents();
             scene.render();
         });
     };

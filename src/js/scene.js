@@ -7,10 +7,7 @@ function createScene(engine, canvas) {
     // let ground = createGround(scene);
     // let walls = createWalls(scene);
 
-    let debugCamera = createDebugCamera(scene, canvas);
-    // let followCamera = createFollowCamera(scene, ground);
-    // scene.activeCamera = followCamera;
-    scene.activeCamera = debugCamera;
+
     scene.collisionsEnabled = true;
     createLights(scene);
     var background = new BABYLON.Layer("back", "./assets/background.jpg", scene);
@@ -93,9 +90,9 @@ function createWalls(scene) {
 
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
-    let light = new BABYLON.HemisphericLight("dir", new BABYLON.Vector3(-20, 20, 0), scene);
-    let light2 = new BABYLON.HemisphericLight("dir2", new BABYLON.Vector3(0, 0, 20), scene);
-    let light3 = new BABYLON.HemisphericLight("dir3", new BABYLON.Vector3(20, 20, 0), scene);
+    let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(-20, 20, 0), scene);
+    let light2 = new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, 0, 20), scene);
+    let light3 = new BABYLON.HemisphericLight("light3", new BABYLON.Vector3(20, 20, 0), scene);
     light.intensity = 0.5;
     light2.intensity = 0.5;
     light3.intensity = 0.5;
@@ -125,11 +122,11 @@ function createDebugCamera(scene, canvas) {
 }
 
 function createFollowCamera(scene, target) {
-    let camera = new BABYLON.FollowCamera("tankFollowCamera", new BABYLON.Vector3(0, 200, -70), scene, target);
+    let camera = new BABYLON.FollowCamera("tankFollowCamera", new BABYLON.Vector3(0, 200, 0), scene, target);
 
     camera.radius = 50; // how far from the object to follow
     camera.heightOffset = 1; // how high above the object to place the camera
-    camera.rotationOffset = 180; // the viewing angle
+    camera.rotationOffset = 90; // the viewing angle
     camera.cameraAcceleration = 0; // how fast to move
     camera.maxCameraSpeed = 0; // speed limit
     // camera.
@@ -140,4 +137,4 @@ function createFollowCamera(scene, target) {
     return camera;
 }
 
-export default createScene;
+export { createScene, createFollowCamera, createDebugCamera };

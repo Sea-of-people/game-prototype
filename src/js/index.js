@@ -95,9 +95,9 @@ function startGame() {
     assetsManager.onFinish = function (tasks) {
         tank = new Tank(scene);
         let debugCamera = createDebugCamera(scene, canvas);
-        // let followCamera = createFollowCamera(scene, scene.getMeshByName("Cuve"));
-        // scene.activeCamera = followCamera;
-        scene.activeCamera = debugCamera;
+        let followCamera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
+        scene.activeCamera = followCamera;
+        // scene.activeCamera = debugCamera;
 
 
 

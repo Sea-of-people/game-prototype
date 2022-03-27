@@ -176,18 +176,16 @@ function createDebugCamera(scene, canvas) {
 }
 
 function createFollowCamera(scene, target) {
-    let camera = new BABYLON.FollowCamera("tankFollowCamera", new BABYLON.Vector3(0, 200, 0), scene, target);
 
-    camera.radius = 50; // how far from the object to follow
-    camera.heightOffset = 1; // how high above the object to place the camera
+    let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
+
+    camera.radius = 150; // how far from the object to follow
+    camera.heightOffset = 180; // how high above the object to place the camera
+
     camera.rotationOffset = 90; // the viewing angle
-    camera.cameraAcceleration = 0; // how fast to move
-    camera.maxCameraSpeed = 0; // speed limit
-    // camera.
-    camera.position.z -= 40;
-    camera.position.y += 50;
-    //camera.setTarget(new BABYLON.Vector3(100, 0, 0));
-    // camera.setPosition(new BABYLON.Vector3(0, 0, 20));
+    camera.cameraAcceleration = 0.1; // how fast to move
+    camera.maxCameraSpeed = 1; // speed limit
+
     return camera;
 }
 

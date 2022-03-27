@@ -40,10 +40,10 @@ class Tank {
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
         this.bounder.position = this.tank.position.clone();
-
-        bounderMaterial.alpha = .4;
-        this.bounder.material = bounderMaterial;
-        this.bounder.material.diffuseColor = new BABYLON.Color3.Random();
+        this.bounder.visibility = false;
+        // bounderMaterial.alpha = .4;
+        // this.bounder.material = bounderMaterial;
+        // this.bounder.material.diffuseColor = new BABYLON.Color3.Random();
         this.bounder.checkCollisions = true;
 
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(

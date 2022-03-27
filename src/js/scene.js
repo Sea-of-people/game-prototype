@@ -1,26 +1,13 @@
-function createScene(engine, canvas) {
-    let scene = new BABYLON.Scene(engine);
-    scene.enablePhysics(
-        new BABYLON.Vector3(0, -9.81, 0)
-    );
-
-    // let ground = createGround(scene);
-    // let walls = createWalls(scene);
-
-
-    scene.collisionsEnabled = true;
-    createLights(scene);
-    var background = new BABYLON.Layer("back", "./assets/background.jpg", scene);
-    background.isBackground = true;
-    background.texture.level = 0;
-
-    scene.score = 0;
-
-    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
+/**
+ *
+ * @param{BABYLON.Scene} scene
+ */
+function createGUI(scene) {
+    let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
         "myUI"
     );
-    var createRectangle = function() {
-        var rect1 = new BABYLON.GUI.Rectangle();
+    let createRectangle = function () {
+        let rect1 = new BABYLON.GUI.Rectangle();
         rect1.width = 0.2;
         rect1.height = "40px";
         rect1.cornerRadius = 20;
@@ -32,8 +19,8 @@ function createScene(engine, canvas) {
     }
     let rect = createRectangle();
 
-    var createRectangleHelp = function() {
-        var rect1 = new BABYLON.GUI.Rectangle();
+    let createRectangleHelp = function () {
+        let rect1 = new BABYLON.GUI.Rectangle();
         rect1.width = 0.5;
         rect1.height = "40px";
         rect1.cornerRadius = 20;
@@ -54,7 +41,7 @@ function createScene(engine, canvas) {
     rect.addControl(text);
 
     let textHelp = new BABYLON.GUI.TextBlock();
-    textHelp.text =  "Move: ZQSD | Attraction: SpaceBar | Repulsion: Shift";
+    textHelp.text = "Move: ZQSD | Attraction: SpaceBar | Repulsion: Shift";
     textHelp.color = "white";
     textHelp.fontSize = 24;
     rectHelp.addControl(textHelp);
@@ -67,81 +54,32 @@ function createScene(engine, canvas) {
 
     scene.gui = {}
     scene.gui.scoreText = text;
+}
 
-    // text1.advancedTexture.addControl(text1);
+function createScene(engine, canvas) {
+    let scene = new BABYLON.Scene(engine);
+
+    scene.enablePhysics(
+        new BABYLON.Vector3(0, -9.81, 0)
+    );
+
+    scene.collisionsEnabled = true;
+    createLights(scene);
+    let background = new BABYLON.Layer("back", "./assets/background.jpg", scene);
+    background.isBackground = true;
+    background.texture.level = 0;
+
+    scene.score = 0;
+    createGUI(scene);
+
 
     return scene;
 }
 
-function createGround(scene) {
-    const groundOptions = {
-        width: 200,
-        height: 200,
-        subdivisions: 20
-    };
-    //scene is optional and defaults to the current scene
-    const ground = BABYLON.MeshBuilder.CreateGround("ground", groundOptions, scene);
-    //const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/hmap1.png', groundOptions, scene);
-
-    const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-    groundMaterial.diffuseColor = new BABYLON.Color3(0.878, 0.858, 0.745);
-    //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
-    ground.material = groundMaterial;
-    // to be taken into account by collision detection
-    ground.checkCollisions = true;
-    //groundMaterial.wireframe=true;
-
-    ground.physicsImpostor = new BABYLON.PhysicsImpostor(
-        ground,
-        BABYLON.PhysicsImpostor.HeightmapImpostor, {
-            mass: 0,
-            friction: 5,
-            restitution: 0.5
-        },
-        scene
-    );
-
-    return ground;
-}
-
-function createWalls(scene) {
-
-    const wallOptions = {
-        width: 200,
-        height: 20,
-        subdivision: 20
-    }
-    const wallMaterial = new BABYLON.StandardMaterial("wallMaterial", scene, wallOptions);
-    wallMaterial.diffuseColor = new BABYLON.Color3(0.717, 0.521, 0.521);
-    wallMaterial.backFaceCulling = false;
-
-
-    const wall = BABYLON.MeshBuilder.CreatePlane("wall", wallOptions, scene);
-    const wall1 = BABYLON.MeshBuilder.CreatePlane("wall1", wallOptions, scene);
-    const wall2 = BABYLON.MeshBuilder.CreatePlane("wall2", wallOptions, scene);
-    const wall3 = BABYLON.MeshBuilder.CreatePlane("wall3", wallOptions, scene);
-
-    wall.material = wallMaterial;
-    wall1.material = wallMaterial;
-    wall2.material = wallMaterial;
-    wall3.material = wallMaterial;
-
-    wall.position = new BABYLON.Vector3(0, 10, 100);
-    wall1.position = new BABYLON.Vector3(0, 10, -100);
-    wall2.position = new BABYLON.Vector3(-100, 10, 0);
-    wall3.position = new BABYLON.Vector3(100, 10, 0);
-
-    wall2.rotation.y = Math.PI / 2;
-    wall3.rotation.y = Math.PI / 2;
-
-    wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1}, scene);
-    wall1.physicsImpostor = new BABYLON.PhysicsImpostor(wall1, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0 , restitution: 0.1}, scene);
-    wall2.physicsImpostor = new BABYLON.PhysicsImpostor(wall2, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0 , restitution: 0.1}, scene);
-    wall3.physicsImpostor = new BABYLON.PhysicsImpostor(wall3, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0 , restitution: 0.1}, scene);
-
-    return {wall, wall1, wall2, wall3};
-}
-
+/**
+ *
+ * @param{BABYLON.Scene} scene
+ */
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
     let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(-20, 20, 0), scene);
@@ -153,6 +91,12 @@ function createLights(scene) {
     // let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 1), scene);
 }
 
+/**
+ *
+ * @param{BABYLON.Scene} scene
+ * @param {HTMLElement}canvas
+ * @returns {BABYLON.FreeCamera}
+ */
 function createDebugCamera(scene, canvas) {
     let camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(-5, 250, -40), scene);
     camera.attachControl(canvas);
@@ -175,6 +119,12 @@ function createDebugCamera(scene, canvas) {
     return camera;
 }
 
+/**
+ *
+ * @param{BABYLON.Scene} scene
+ * @param {BABYLON.AbstractMesh}target
+ * @returns {BABYLON.FollowCamera}
+ */
 function createFollowCamera(scene, target) {
 
     let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
@@ -189,4 +139,4 @@ function createFollowCamera(scene, target) {
     return camera;
 }
 
-export { createScene, createFollowCamera, createDebugCamera };
+export {createScene, createFollowCamera, createDebugCamera};

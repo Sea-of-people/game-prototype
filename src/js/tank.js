@@ -1,9 +1,11 @@
 class Tank {
-
+    /**
+     *
+     * @param {BABYLON.Scene} scene
+     */
     constructor(scene) {
         this.scene = scene;
         this.inputStates = {};
-        this.activatedSkill = false;
         this.skills = {
             "pushAway": false,
             "attract": false
@@ -11,9 +13,6 @@ class Tank {
         this.createTank();
         this.createBounder();
         this.tankEvent();
-        // this.createCannon(scene);
-
-
         this.bounder.tankMesh = this.tank;
     }
 
@@ -41,9 +40,6 @@ class Tank {
 
         this.bounder.position = this.tank.position.clone();
         this.bounder.visibility = false;
-        // bounderMaterial.alpha = .4;
-        // this.bounder.material = bounderMaterial;
-        // this.bounder.material.diffuseColor = new BABYLON.Color3.Random();
         this.bounder.checkCollisions = true;
 
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
@@ -108,25 +104,17 @@ class Tank {
             this.zMovement = 0;
             this.yMovement = -2;
         }
-        let oldVel = this.bounder.physicsImpostor.getLinearVelocity()
-        let v = oldVel
-        let vel = BABYLON.Vector3.Clamp(v,new BABYLON.Vector3(-this.tank.speed,-this.tank.speed,-this.tank.speed),
-            new BABYLON.Vector3(this.tank.speed,this.tank.speed,this.tank.speed))
-
         if (this.inputStates.up) {
-            // this.bounder.physicsImpostor.setLinearVelocity(vel);
             this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
                 this.bounder.physicsImpostor.getLinearVelocity().x + Math.sin(this.bounder.rotation.y),
                 this.bounder.physicsImpostor.getLinearVelocity().y,
                 this.bounder.physicsImpostor.getLinearVelocity().z + Math.cos(this.bounder.rotation.y)));
-            // this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(this.tank.speed, this.tank.speed, this.tank.speed));
         }
         if (this.inputStates.down) {
             this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
                 this.bounder.physicsImpostor.getLinearVelocity().x - Math.sin(this.bounder.rotation.y),
                 this.bounder.physicsImpostor.getLinearVelocity().y,
                 this.bounder.physicsImpostor.getLinearVelocity().z - Math.cos(this.bounder.rotation.y)));
-            // this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(-this.tank.speed, -this.tank.speed, -this.tank.speed));
         }
         if (this.inputStates.left) {
             this.bounder.rotation.y -= 0.02;
@@ -137,18 +125,6 @@ class Tank {
             this.bounder.frontVector = new BABYLON.Vector3(Math.sin(this.bounder.rotation.y), 0, Math.cos(this.bounder.rotation.y));
         }
     }
-
-
-    // moveTurret() {
-    //     if (this.inputStates.fireLeft) {
-    //         this.turret.rotation.y -= 0.01;
-    //         this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
-    //     }
-    //     if (this.inputStates.fireRight) {
-    //         this.turret.rotation.y += 0.01;
-    //         this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
-    //     }
-    // }
 
     tankEvent() {
         this.inputStates.left = false;

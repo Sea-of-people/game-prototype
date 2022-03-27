@@ -2,7 +2,7 @@ class Sphere {
     /**
      *
      * @param {String} name
-     * @param {*} scene
+     * @param {BABYLON.Scene} scene
      * @param {String} spawnMeshName
      * @param {BABYLON.Vector3} basicImpulse
      */
@@ -12,25 +12,13 @@ class Sphere {
         this._rayon = this._diameter / 2;
         this._scene = scene;
         this.sphere = BABYLON.Mesh.CreateSphere(name, 4, this._diameter, scene);
-        // this.sphere.showBoundingBox = true;
         this._spawnSphere = this._scene.getMeshByName(spawnMeshName);
         this._basicImpulse = basicImpulse;
         this.configureSphere();
     }
 
     configureSphere() {
-        // let x =
-        //   ((Math.random() * (this._maxX - this._rayon)) %
-        //     (this._maxX - this._diameter)) -
-        //   (this._maxX / 2 - this._rayon);
-        // let z =
-        //   ((Math.random() * (this._maxZ - this._rayon)) %
-        //     (this._maxZ - this._diameter)) -
-        //   (this._maxZ / 2 - this._rayon);
-        // let spawnSphere = this._scene.getMeshByName("SpawnSpheres1");
-        // this.sphere.position = new BABYLON.Vector3(x, this._y, z);
         this.sphere.position = this._spawnSphere.position.clone();
-        // sphere.checkCollisions = true;
         this.sphere.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.sphere,
             BABYLON.PhysicsImpostor.SphereImpostor,
@@ -49,7 +37,6 @@ class Sphere {
         sphereMaterial.emissiveColor = new BABYLON.Color3.Random();
         this.sphere.material = sphereMaterial;
         this.sphere.physicsImpostor.applyImpulse(
-            // new BABYLON.Vector3(15, -10, 0),
             this._basicImpulse,
             this.sphere.getAbsolutePosition()
         );
@@ -80,7 +67,6 @@ class Sphere {
         let dir = direction.normalize();
         dir.x *= 150;
         dir.z *= 150;
-        // console.log(this.sphere.getDirection(this.sphere.position));
         if (distance < 70) {
             this.sphere.physicsImpostor.applyImpulse(
                 dir,
@@ -98,7 +84,6 @@ class Sphere {
         dir.x *= 150;
         dir.z *= 150;
         dir = new BABYLON.Vector3(-dir.x, dir.y, -dir.z)
-        // console.log(this.sphere.getDirection(this.sphere.position));
         if (distance < 70) {
             this.sphere.physicsImpostor.applyImpulse(
                 dir,
@@ -115,10 +100,8 @@ class Sphere {
     disposeSelf() {
         this.sphere.dispose();
         let index = this._scene.sphereList.indexOf(this, 0)
-        // console.log("disposing !")
         this._scene.sphereList.splice(index, 1);
         this._scene.score++;
-        console.log(this._scene.score);
         delete this;
     }
 }

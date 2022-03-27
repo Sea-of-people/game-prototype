@@ -4,16 +4,17 @@ class Sphere {
    * @param {String} name
    * @param {*} scene
    * @param {String} spawnMeshName
+   * @param {BABYLON.Vector3} basicImpulse
    */
-  constructor(name, scene, spawnMeshName) {
+  constructor(name, scene, spawnMeshName, basicImpulse) {
     this._name = name;
     this._diameter = 8;
     this._rayon = this._diameter / 2;
     this._scene = scene;
     this.sphere = BABYLON.Mesh.CreateSphere(name, 4, this._diameter, scene);
-    this.sphere.showBoundingBox = true;
+    // this.sphere.showBoundingBox = true;
     this._spawnSphere = this._scene.getMeshByName(spawnMeshName);
-
+    this._basicImpulse = basicImpulse;
     this.configureSphere();
   }
 
@@ -48,7 +49,8 @@ class Sphere {
     sphereMaterial.emissiveColor = new BABYLON.Color3.Random();
     this.sphere.material = sphereMaterial;
     this.sphere.physicsImpostor.applyImpulse(
-        new BABYLON.Vector3(15, -10, 0),
+        // new BABYLON.Vector3(15, -10, 0),
+        this._basicImpulse,
         this.sphere.getAbsolutePosition()
     );
   }
@@ -59,15 +61,15 @@ class Sphere {
 
     // console.log(`${this._name}`);
     // follow the tank
-    let tank = this._scene.getMeshByName("heroTank");
+    let tank = this._scene.getMeshByName("BB_Unit");
     // let's compute the direction vector that goes from Dude to the tank
     let direction = tank.position.subtract(this.sphere.position);
     let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
     let dir = direction.normalize();
-    dir.x *= 0.4;
-    dir.z *= 0.4;
+    dir.x *= 150;
+    dir.z *= 150;
     // console.log(this.sphere.getDirection(this.sphere.position));
-    if (distance < 50) {
+    if (distance < 70) {
       this.sphere.physicsImpostor.applyImpulse(
         dir,
         this.sphere.getAbsolutePosition()
@@ -76,8 +78,16 @@ class Sphere {
   }
 }
 
-function generateCrowd(i, scene, spawnMeshName) {
-  let sphere = new Sphere(`sphere${i}`, scene, spawnMeshName);
+/**
+ *
+ * @param i
+ * @param scene
+ * @param spawnMeshName
+ * @param basicImpulse
+ * @returns {Sphere}
+ */
+function generateCrowd(i, scene, spawnMeshName, basicImpulse) {
+  let sphere = new Sphere(`sphere${i}`, scene, spawnMeshName, basicImpulse);
   return sphere;
 }
 

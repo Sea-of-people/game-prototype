@@ -25,25 +25,88 @@ function startGame() {
     let isGenerating = true;
     var assetsManager = new BABYLON.AssetsManager(scene);
     var meshTask = assetsManager.addMeshTask(
-        "meshesTasks", "meshes", "./models/", "scene_prototype.babylon");
-    // meshTask.onSuccess = function (task) {
-    //     let glassPanel = task.loadedMeshes[0];
-    //     console.log(task);
-    //     const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-    //     groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-    //     groundMaterial.alpha = 0.4;
-    //     glassPanel.material = groundMaterial;
-    // }
-    BABYLON.SceneLoader.ImportMesh("", "./models/",
-        "scene_prototype.babylon", scene, (meshes) => {
-            console.log('meshes', meshes);
+        "meshesTasks", "", "./models/", "scene_prototype.babylon");
 
-            let glassPanel = meshes[0];
-            const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-            groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-            groundMaterial.alpha = 0.4;
-            glassPanel.material = groundMaterial;
-        });
+    var bbTask = assetsManager.addMeshTask(
+        "bb_unitTask", "", "./models/", "bb-unit.babylon");
+    meshTask.onSuccess = function (task) {
+        let glassPanel = scene.getMeshByName("GlassPanel");
+        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
+        groundMaterial.alpha = 0.2;
+        glassPanel.material = groundMaterial;
+
+        let spawnRamp1 = scene.getMeshByName("SpawnRamp1");
+        spawnRamp1.visibility = 0;
+        let spawnRamp2 = scene.getMeshByName("SpawnRamp2");
+        spawnRamp2.visibility = 0;
+        let spawnRamp3 = scene.getMeshByName("SpawnRamp3");
+        spawnRamp3.visibility = 0;
+        let spawnTank = scene.getMeshByName("SpawnTank");
+        spawnTank.visibility = 0;
+        let trigger = scene.getMeshByName("Trigger1");
+        trigger.visibility = 0;
+
+        console.log(task.name + " loaded");
+
+    }
+    bbTask.onSuccess = function (task) {
+        let meshes = task.loadedMeshes;
+        for (let i = 0; i < meshes.length; i++) {
+            // meshes[0].scaling = new BABYLON.Vector3(.3, .3, .25);
+            if (meshes[i].name === "BB8_Body1" || meshes[i].name === "BB8_Body2") {
+
+            } else {
+
+                meshes[i].scaling = new BABYLON.Vector3(.23, .23, .23);
+                meshes[i].rotate(new BABYLON.Vector3(0, 0.5, 0), BABYLON.Tools.ToRadians(180));
+            }
+        }
+        console.log(task.name + " loaded");
+
+    };
+    // BABYLON.SceneLoader.ImportMesh("", "./models/",
+    //     "bb-unit.babylon", scene, (meshes) => {
+    //         console.log(meshes);
+    //         for (let i = 0; i < meshes.length; i++) {
+    //             // meshes[0].scaling = new BABYLON.Vector3(.3, .3, .25);
+    //             if (meshes[i].name === "BB8_Body1" || meshes[i].name === "BB8_Body2") {
+    //
+    //             } else {
+    //
+    //                 meshes[i].scaling = new BABYLON.Vector3(.23, .23, .23);
+    //                 meshes[i].rotate(new BABYLON.Vector3(0, 0.5, 0), BABYLON.Tools.ToRadians(180));
+    //             }
+    //         }
+    //
+    //     },(e) => {
+    //         engine.loadingUIText = "Loading...";
+    //     });
+    // BABYLON.SceneLoader.ImportMesh("", "./models/",
+    //     "scene_prototype.babylon", scene, (meshes) => {
+    //         console.log('meshes', meshes);
+    //
+    //         // let glassPanel = meshes[0];
+    //         let glassPanel = scene.getMeshByName("GlassPanel");
+    //         const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+    //         groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
+    //         groundMaterial.alpha = 0.4;
+    //         glassPanel.material = groundMaterial;
+    //
+    //         let spawnRamp1 = scene.getMeshByName("SpawnRamp1");
+    //         spawnRamp1.visibility = 0;
+    //         let spawnRamp2 = scene.getMeshByName("SpawnRamp2");
+    //         spawnRamp2.visibility = 0;
+    //         let spawnRamp3 = scene.getMeshByName("SpawnRamp3");
+    //         spawnRamp3.visibility = 0;
+    //         let spawnTank = scene.getMeshByName("SpawnTank");
+    //         spawnTank.visibility = 0;
+    //         let trigger = scene.getMeshByName("Trigger1");
+    //         trigger.visibility = 0;
+    //
+    //     }, (e) => {
+    //         engine.loadingUIText = "Loading...";
+    //     });
     assetsManager.onProgress = function (
         remainingCount,
         totalCount,
@@ -63,14 +126,19 @@ function startGame() {
             " items still need to be loaded." + lastFinishedTask.name
         );
     };
-    scene.executeWhenReady(() => {
+    // scene.executeWhenReady(() => {
+    // let tank = new Tank(scene);
+
+    assetsManager.onFinish = function (tasks) {
         let tank = new Tank(scene);
 
-        // assetsManager.onFinish = function (tasks) {
+
         console.log("Starting game...");
         engine.runRenderLoop(() => {
             if (isGenerating && scene.sphereList.length < maxCrowd) {
-                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnSpheres1"));
+                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnRamp1", new BABYLON.Vector3(15, -10, 0)));
+                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnRamp2", new BABYLON.Vector3(0, -10, 15)));
+                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnRamp3", new BABYLON.Vector3(0, -10, -15)));
                 isGenerating = false;
                 setTimeout(() => {
                     isGenerating = true;
@@ -78,14 +146,10 @@ function startGame() {
             }
             let deltaTime = engine.getDeltaTime(); // remind you something ?
             tank.moveTank();
-
-            for (let i = 0; i < scene.sphereList.length; i++) {
-                let sphere = scene.sphereList[i];
-                sphere.move();
-            }
+            tank.skill();
             scene.render();
         });
-    });
+    };
 
 
     assetsManager.load();

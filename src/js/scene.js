@@ -70,8 +70,7 @@ function createScene(engine, canvas) {
     background.texture.level = 0;
 
     scene.score = 0;
-    createGUI(scene);
-
+    //createGUI(scene);
 
     return scene;
 }
@@ -139,4 +138,4 @@ function createFollowCamera(scene, target) {
     return camera;
 }
 
-export {createScene, createFollowCamera, createDebugCamera};
+export {createScene, createGUI, createFollowCamera, createDebugCamera};

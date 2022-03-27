@@ -1,5 +1,5 @@
 import Tank from "./tank.js";
-import {createFollowCamera, createScene} from "./scene.js";
+import {createFollowCamera, createScene, createGUI} from "./scene.js";
 import generateCrowd from "./crowd.js";
 import loadAssets from "./loader.js";
 
@@ -27,7 +27,9 @@ function startGame() {
 
     assetsManager.onFinish = function (tasks) {
         // let debugCamera = createDebugCamera(scene, canvas);
-        scene.activeCamera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
+        let camera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
+        scene.activeCamera = camera;
+        createGUI(scene);
         // scene.activeCamera = debugCamera;
         tank = new Tank(scene);
         let trigger = scene.getMeshByName("Trigger1");

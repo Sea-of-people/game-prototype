@@ -14,7 +14,6 @@ function startGame() {
     engine = new BABYLON.Engine(canvas, true);
     scene = createScene(engine, canvas);
 
-    let tank = new Tank(scene);
 
     const axes = new BABYLON.AxesViewer(scene, 20);
     // modify some default settings (i.e pointer events to prevent cursor to go
@@ -64,11 +63,14 @@ function startGame() {
             " items still need to be loaded." + lastFinishedTask.name
         );
     };
-    assetsManager.onFinish = function (tasks) {
+    scene.executeWhenReady(() => {
+        let tank = new Tank(scene);
+
+        // assetsManager.onFinish = function (tasks) {
         console.log("Starting game...");
         engine.runRenderLoop(() => {
             if (isGenerating && scene.sphereList.length < maxCrowd) {
-                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, 200, 50, 200));
+                scene.sphereList.push(generateCrowd(scene.sphereList.length, scene, "SpawnSpheres1"));
                 isGenerating = false;
                 setTimeout(() => {
                     isGenerating = true;
@@ -83,10 +85,9 @@ function startGame() {
             }
             scene.render();
         });
-    }
-    assetsManager.onTaskSuccessObservable.add(function (task) {
-        console.log('task successful', task)
     });
+
+
     assetsManager.load();
 
 }

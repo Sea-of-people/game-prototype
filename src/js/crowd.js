@@ -3,21 +3,17 @@ class Sphere {
    *
    * @param {String} name
    * @param {*} scene
-   * @param {Number} maxX
-   * @param {Number} y
-   * @param {Number} maxZ
+   * @param {String} spawnMeshName
    */
-  constructor(name, scene, maxX, y, maxZ) {
+  constructor(name, scene, spawnMeshName) {
     this._name = name;
-    this._maxX = maxX;
-    this._y = y;
-    this._maxZ = maxZ;
     this._diameter = 8;
     this._rayon = this._diameter / 2;
     this._scene = scene;
     this.sphere = BABYLON.Mesh.CreateSphere(name, 4, this._diameter, scene);
     this.sphere.showBoundingBox = true;
-    this._speed = 1;
+    this._spawnSphere = this._scene.getMeshByName(spawnMeshName);
+
     this.configureSphere();
   }
 
@@ -30,9 +26,9 @@ class Sphere {
     //   ((Math.random() * (this._maxZ - this._rayon)) %
     //     (this._maxZ - this._diameter)) -
     //   (this._maxZ / 2 - this._rayon);
-    let spawnSphere = this._scene.getMeshByName("SpawnSpheres1");
+    // let spawnSphere = this._scene.getMeshByName("SpawnSpheres1");
     // this.sphere.position = new BABYLON.Vector3(x, this._y, z);
-    this.sphere.position = spawnSphere.position.clone();
+    this.sphere.position = this._spawnSphere.position.clone();
     // sphere.checkCollisions = true;
     this.sphere.physicsImpostor = new BABYLON.PhysicsImpostor(
       this.sphere,
@@ -80,8 +76,8 @@ class Sphere {
   }
 }
 
-function generateCrowd(i, scene, maxX, y, maxZ) {
-  let sphere = new Sphere(`sphere${i}`, scene, maxX, y, maxZ);
+function generateCrowd(i, scene, spawnMeshName) {
+  let sphere = new Sphere(`sphere${i}`, scene, spawnMeshName);
   return sphere;
 }
 

@@ -4,9 +4,10 @@ class Tank {
         this.scene = scene;
         this.inputStates = {};
         this.createTank(scene);
-        this.createCannon(scene);
         this.createBounder();
         this.tankEvent();
+        this.createCannon(scene);
+
 
         this.bounder.tankMesh = this.tank;
     }
@@ -27,7 +28,9 @@ class Tank {
         this.tank.material = tankMaterial;
 
         // By default the box/tank is in 0, 0, 0, let's change that...
-        this.tank.position.y = 2;
+        // this.tank.position.y = 2;
+        let spawnTank = this.scene.getMeshByName("SpawnTank");
+        this.tank.position = spawnTank.position.clone();
         this.tank.speed = 0.4;
         this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
     }
@@ -44,7 +47,7 @@ class Tank {
 
         cylinder.parent = box;
         box.parent = this.tank;
-        box.position.y = this.tank.position.y + 1;
+        box.position.y = this.tank.position.y + .5;
 
         let boxMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
         boxMaterial.diffuseColor = new BABYLON.Color3.Random;

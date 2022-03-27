@@ -3,88 +3,101 @@ class Tank {
     constructor(scene) {
         this.scene = scene;
         this.inputStates = {};
-        this.createTank(scene);
-        this.createCannon(scene);
+        this.activatedSkill = false;
+        this.createTank();
         this.createBounder();
         this.tankEvent();
+        // this.createCannon(scene);
+
 
         this.bounder.tankMesh = this.tank;
     }
 
-    createTank(scene) {
-        this.tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {
-            height: 1,
-            depth: 6,
-            width: 6
-        }, scene);
+    createTank() {
+        this.tank = this.scene.getMeshByName("BB_Unit");
+        console.log(this.tank.position);
+        // this.tank.rotate(new BABYLON.Vector3(.5, 0.5, 0), BABYLON.Tools.ToRadians(90));
+        // this.tank.rotation.x = 10;
+        // parent.rotate(new BABYLON.Vector3(0, 0.5, 0), BABYLON.Tools.ToRadians(90));
+        // parent.rotationQuaternion = yprQuaternion;
+        //     new BABYLON.MeshBuilder.CreateBox("heroTank", {
+        //     height: 1,
+        //     depth: 6,
+        //     width: 6
+        // }, scene);
 
 
-        scene.sphereList = [];
+        this.scene.sphereList = [];
 
-        let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
-        tankMaterial.diffuseColor = new BABYLON.Color3.Red;
-        tankMaterial.emissiveColor = new BABYLON.Color3.Blue;
-        this.tank.material = tankMaterial;
+        // let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
+        // tankMaterial.diffuseColor = new BABYLON.Color3.Red;
+        // tankMaterial.emissiveColor = new BABYLON.Color3.Blue;
+        // this.tank.material = tankMaterial;
 
         // By default the box/tank is in 0, 0, 0, let's change that...
-        this.tank.position.y = 2;
+        // this.tank.position.y = 2;
+        // this.tank.rotation.z = Math.PI / 2;
+        let spawnTank = this.scene.getMeshByName("SpawnTank");
+        console.log(spawnTank.position);
+        this.tank.position = spawnTank.position.clone();
+        this.tank.position.y -= .2;
         this.tank.speed = 0.4;
         this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
     }
 
-    createCannon(scene) {
-        let cylinder = BABYLON.Mesh.CreateCylinder("cylinder", 5, 1, 1, 6, 1, scene, false, BABYLON.Mesh.DEFAULTSIDE);
-        let box = BABYLON.MeshBuilder.CreateBox("box", {
-            height: 1,
-            depth: 4,
-            width: 4
-        }, scene);
-
-        this.turret = box;
-
-        cylinder.parent = box;
-        box.parent = this.tank;
-        box.position.y = this.tank.position.y + 1;
-
-        let boxMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
-        boxMaterial.diffuseColor = new BABYLON.Color3.Random;
-        boxMaterial.emissiveColor = new BABYLON.Color3.Random;
-        box.material = boxMaterial;
-
-        let cylinderMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
-        cylinderMaterial.diffuseColor = new BABYLON.Color3.Random;
-        cylinderMaterial.emissiveColor = new BABYLON.Color3.Random;
-        cylinder.material = cylinderMaterial;
-
-        cylinder.position.z = this.tank.position.z + 2;
-        cylinder.rotation.x = Math.PI / 2;
-        cylinder.move = () => {
-            //tank.position.z += -1; // speed should be in unit/s, and depends on
-            // deltaTime !
-
-            // if we want to move while taking into account collision detections
-            // collision uses by default "ellipsoids"
-
-            let yMovement = 0;
-            let zMovement = 0;
-
-            if (cylinder.position.y > 2) {
-                zMovement = 0;
-                yMovement = -2;
-            }
-
-            if (this.inputStates.fireLeft) {
-
-                box.rotation.y -= 0.01;
-                box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
-            }
-            if (this.inputStates.fireRight) {
-
-                box.rotation.y += 0.01;
-                box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
-            }
-        }
-    }
+    // createCannon(scene) {
+    //     let cylinder = BABYLON.Mesh.CreateCylinder("cylinder", 5, 1, 1, 6, 1, scene, false, BABYLON.Mesh.DEFAULTSIDE);
+    //     let box = BABYLON.MeshBuilder.CreateBox("box", {
+    //         height: 1,
+    //         depth: 4,
+    //         width: 4
+    //     }, scene);
+    //
+    //     this.turret = box;
+    //
+    //     cylinder.parent = box;
+    //     box.parent = this.tank;
+    //     box.position.y = this.tank.position.y + .5;
+    //
+    //     let boxMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
+    //     boxMaterial.diffuseColor = new BABYLON.Color3.Random;
+    //     boxMaterial.emissiveColor = new BABYLON.Color3.Random;
+    //     box.material = boxMaterial;
+    //
+    //     let cylinderMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
+    //     cylinderMaterial.diffuseColor = new BABYLON.Color3.Random;
+    //     cylinderMaterial.emissiveColor = new BABYLON.Color3.Random;
+    //     cylinder.material = cylinderMaterial;
+    //
+    //     cylinder.position.z = this.tank.position.z + 2;
+    //     cylinder.rotation.x = Math.PI / 2;
+    //     cylinder.move = () => {
+    //         //tank.position.z += -1; // speed should be in unit/s, and depends on
+    //         // deltaTime !
+    //
+    //         // if we want to move while taking into account collision detections
+    //         // collision uses by default "ellipsoids"
+    //
+    //         let yMovement = 0;
+    //         let zMovement = 0;
+    //
+    //         if (cylinder.position.y > 2) {
+    //             zMovement = 0;
+    //             yMovement = -2;
+    //         }
+    //
+    //         if (this.inputStates.fireLeft) {
+    //
+    //             box.rotation.y -= 0.01;
+    //             box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
+    //         }
+    //         if (this.inputStates.fireRight) {
+    //
+    //             box.rotation.y += 0.01;
+    //             box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
+    //         }
+    //     }
+    // }
 
     createBounder() {
         const bounderOptions = {
@@ -109,15 +122,29 @@ class Tank {
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
             BABYLON.PhysicsImpostor.SphereImpostor, {
-                mass: 100,
+                mass: 5,
                 friction: 1,
-                restitution: 0.8
+                restitution: 0.6
             },
             this.scene
         );
 
         this.bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
         // return bounder;
+    }
+
+    skill() {
+        if (!this.activatedSkill && this.inputStates.space) {
+            console.log("space");
+            this.activatedSkill = true;
+            setTimeout(() => {
+                this.activatedSkill = false;
+            }, 2000);
+            for (let i = 0; i < this.scene.sphereList.length; i++) {
+                let sphere = this.scene.sphereList[i];
+                sphere.move();
+            }
+        }
     }
 
     moveTank() {
@@ -134,8 +161,13 @@ class Tank {
             this.zMovement = 0;
             this.yMovement = -2;
         }
+        let oldVel = this.bounder.physicsImpostor.getLinearVelocity()
+        let v = oldVel
+        let vel = BABYLON.Vector3.Clamp(v,new BABYLON.Vector3(-this.tank.speed,-this.tank.speed,-this.tank.speed),
+            new BABYLON.Vector3(this.tank.speed,this.tank.speed,this.tank.speed))
 
         if (this.inputStates.up) {
+            // this.bounder.physicsImpostor.setLinearVelocity(vel);
             this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(this.tank.speed, this.tank.speed, this.tank.speed));
         }
         if (this.inputStates.down) {

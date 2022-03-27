@@ -5,8 +5,10 @@ import generateCrowd from "./crowd.js";
 let canvas;
 let engine;
 let scene;
+let tank;
 
 const maxCrowd = 30;
+
 window.onload = startGame;
 
 function startGame() {
@@ -14,7 +16,7 @@ function startGame() {
     engine = new BABYLON.Engine(canvas, true);
     scene = createScene(engine, canvas);
 
-
+    scene.gameOver = false;
     const axes = new BABYLON.AxesViewer(scene, 20);
     // modify some default settings (i.e pointer events to prevent cursor to go
     // out of the game window)
@@ -22,13 +24,13 @@ function startGame() {
 
     // let tank = scene.getMeshByName("heroTank");
     // let canon = scene.getMeshByName("cylinder");
-    let isGenerating = true;
+    scene.isGenerating = true;
     var assetsManager = new BABYLON.AssetsManager(scene);
     var meshTask = assetsManager.addMeshTask(
         "meshesTasks", "", "./models/", "scene_prototype.babylon");
-
     var bbTask = assetsManager.addMeshTask(
         "bb_unitTask", "", "./models/", "bb-unit.babylon");
+
     meshTask.onSuccess = function (task) {
         console.log(task.loadedMeshes);
         let glassPanel = scene.getMeshByName("GlassPanel");
@@ -66,48 +68,7 @@ function startGame() {
         console.log(task.name + " loaded");
 
     };
-    // BABYLON.SceneLoader.ImportMesh("", "./models/",
-    //     "bb-unit.babylon", scene, (meshes) => {
-    //         console.log(meshes);
-    //         for (let i = 0; i < meshes.length; i++) {
-    //             // meshes[0].scaling = new BABYLON.Vector3(.3, .3, .25);
-    //             if (meshes[i].name === "BB8_Body1" || meshes[i].name === "BB8_Body2") {
-    //
-    //             } else {
-    //
-    //                 meshes[i].scaling = new BABYLON.Vector3(.23, .23, .23);
-    //                 meshes[i].rotate(new BABYLON.Vector3(0, 0.5, 0), BABYLON.Tools.ToRadians(180));
-    //             }
-    //         }
-    //
-    //     },(e) => {
-    //         engine.loadingUIText = "Loading...";
-    //     });
-    // BABYLON.SceneLoader.ImportMesh("", "./models/",
-    //     "scene_prototype.babylon", scene, (meshes) => {
-    //         console.log('meshes', meshes);
-    //
-    //         // let glassPanel = meshes[0];
-    //         let glassPanel = scene.getMeshByName("GlassPanel");
-    //         const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-    //         groundMaterial.diffuseColor = new BABYLON.Color3(0.870, 0.988, 0.984);
-    //         groundMaterial.alpha = 0.4;
-    //         glassPanel.material = groundMaterial;
-    //
-    //         let spawnRamp1 = scene.getMeshByName("SpawnRamp1");
-    //         spawnRamp1.visibility = 0;
-    //         let spawnRamp2 = scene.getMeshByName("SpawnRamp2");
-    //         spawnRamp2.visibility = 0;
-    //         let spawnRamp3 = scene.getMeshByName("SpawnRamp3");
-    //         spawnRamp3.visibility = 0;
-    //         let spawnTank = scene.getMeshByName("SpawnTank");
-    //         spawnTank.visibility = 0;
-    //         let trigger = scene.getMeshByName("Trigger1");
-    //         trigger.visibility = 0;
-    //
-    //     }, (e) => {
-    //         engine.loadingUIText = "Loading...";
-    //     });
+
     assetsManager.onProgress = function (
         remainingCount,
         totalCount,
@@ -127,20 +88,31 @@ function startGame() {
             " items still need to be loaded." + lastFinishedTask.name
         );
     };
+
     // scene.executeWhenReady(() => {
     // let tank = new Tank(scene);
 
     assetsManager.onFinish = function (tasks) {
-        let tank = new Tank(scene);
+        tank = new Tank(scene);
         let debugCamera = createDebugCamera(scene, canvas);
         // let followCamera = createFollowCamera(scene, scene.getMeshByName("Cuve"));
         // scene.activeCamera = followCamera;
         scene.activeCamera = debugCamera;
 
 
+
+        let trigger = scene.getMeshByName("Trigger1");
+        setTriggerProperties(trigger);
+
         console.log("Starting game...");
         engine.runRenderLoop(() => {
-            if (isGenerating && scene.sphereList.length < maxCrowd) {
+            // if (scene.gameOver) {
+            //     scene.gameOver = false;
+            //     console.log("GAME OVER !")
+            //     scene = createScene();
+            // }
+            scene.gui.scoreText.text = scene.gui.scoreText.baseText + scene.score;
+            if (scene.isGenerating && scene.sphereList.length < maxCrowd) {
                 scene.sphereList.push(
                     generateCrowd(
                         scene.sphereList.length,
@@ -155,9 +127,9 @@ function startGame() {
                     generateCrowd(scene.sphereList.length,
                         scene, "SpawnRamp3",
                         new BABYLON.Vector3(0, -15, -20)));
-                isGenerating = false;
+                scene.isGenerating = false;
                 setTimeout(() => {
-                    isGenerating = true;
+                    scene.isGenerating = true;
                 }, 2000);
             }
             let deltaTime = engine.getDeltaTime(); // remind you something ?
@@ -167,9 +139,37 @@ function startGame() {
         });
     };
 
-
     assetsManager.load();
+}
 
+function setTriggerProperties(trigger) {
+    trigger.actionManager = new BABYLON.ActionManager(scene);
+    trigger.actionManager.registerAction(
+        new BABYLON.ExecuteCodeAction(
+            {
+                trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
+                parameter: {
+                    mesh: tank.bounder,
+                    usePreciseIntersection: true
+                }
+            },
+            () => {
+                scene.sphereList.forEach(sphere => {
+                    sphere.disposeSelfGameOver();
+                })
+                scene.sphereList = [];
+                scene.isGenerating = true;
+                scene.score = 0;
+                let spawnTank = scene.getMeshByName("SpawnTank");
+                tank.bounder.position = spawnTank.position.clone();
+                tank.bounder.position.y -= .2;
+                tank.bounder.speed = 0.4;
+                tank.bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
+                tank.bounder.physicsImpostor.setAngularVelocity(new BABYLON.Vector3.Zero());
+                tank.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3.Zero());
+            }
+        )
+    );
 }
 
 function modifySettings() {

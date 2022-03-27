@@ -14,7 +14,61 @@ function createScene(engine, canvas) {
     background.isBackground = true;
     background.texture.level = 0;
 
+    scene.score = 0;
 
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
+        "myUI"
+    );
+    var createRectangle = function() {
+        var rect1 = new BABYLON.GUI.Rectangle();
+        rect1.width = 0.2;
+        rect1.height = "40px";
+        rect1.cornerRadius = 20;
+        rect1.color = "Orange";
+        rect1.thickness = 4;
+        rect1.background = "green";
+        advancedTexture.addControl(rect1);
+        return rect1;
+    }
+    let rect = createRectangle();
+
+    var createRectangleHelp = function() {
+        var rect1 = new BABYLON.GUI.Rectangle();
+        rect1.width = 0.5;
+        rect1.height = "40px";
+        rect1.cornerRadius = 20;
+        rect1.color = "Orange";
+        rect1.thickness = 4;
+        rect1.background = "green";
+        advancedTexture.addControl(rect1);
+        return rect1;
+    }
+
+    let rectHelp = createRectangleHelp();
+
+    let text = new BABYLON.GUI.TextBlock();
+    text.baseText = "Score: ";
+    text.text = "Score: 0";
+    text.color = "white";
+    text.fontSize = 24;
+    rect.addControl(text);
+
+    let textHelp = new BABYLON.GUI.TextBlock();
+    textHelp.text =  "Move: ZQSD | Attraction: SpaceBar | Repulsion: Shift";
+    textHelp.color = "white";
+    textHelp.fontSize = 24;
+    rectHelp.addControl(textHelp);
+
+    rectHelp.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    rectHelp.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+
+    rect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    rect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+
+    scene.gui = {}
+    scene.gui.scoreText = text;
+
+    // text1.advancedTexture.addControl(text1);
 
     return scene;
 }

@@ -1,5 +1,26 @@
 {
-  "dependencies": {
-    "babylonjs": "^4.2.2"
+  "name": "game-prototype",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sea-of-people/game-prototype.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sea-of-people/game-prototype/issues"
+  },
+  "homepage": "https://github.com/Sea-of-people/game-prototype#readme",
+  "devDependencies": {
+    "babylonjs": "^4.2.2",
+    "babylonjs-gui": "^4.2.2"
   }
 }

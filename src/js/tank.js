@@ -1,124 +1,93 @@
 class Tank {
-
+    /**
+     *
+     * @param {BABYLON.Scene} scene
+     */
     constructor(scene) {
         this.scene = scene;
         this.inputStates = {};
-        this.createTank(scene);
-        this.createCannon(scene);
+        this.skills = {
+            "pushAway": false,
+            "attract": false
+        }
+        this.createTank();
         this.createBounder();
         this.tankEvent();
-
         this.bounder.tankMesh = this.tank;
     }
 
-    createTank(scene) {
-        this.tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {
-            height: 1,
-            depth: 6,
-            width: 6
-        }, scene);
+    createTank() {
+        this.tank = this.scene.getMeshByName("BB_Unit");
 
+        this.scene.sphereList = [];
 
-        scene.sphereList = [];
-
-        let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
-        tankMaterial.diffuseColor = new BABYLON.Color3.Red;
-        tankMaterial.emissiveColor = new BABYLON.Color3.Blue;
-        this.tank.material = tankMaterial;
-
-        // By default the box/tank is in 0, 0, 0, let's change that...
-        this.tank.position.y = 0.6;
+        let spawnTank = this.scene.getMeshByName("SpawnTank");
+        console.log(spawnTank.position);
+        this.tank.position = spawnTank.position.clone();
+        this.tank.position.y -= .2;
         this.tank.speed = 0.4;
         this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
     }
 
-    createCannon(scene) {
-        let cylinder = BABYLON.Mesh.CreateCylinder("cylinder", 5, 1, 1, 6, 1, scene, false, BABYLON.Mesh.DEFAULTSIDE);
-        let box = BABYLON.MeshBuilder.CreateBox("box", {
-            height: 1,
-            depth: 4,
-            width: 4
-        }, scene);
-
-        this.turret = box;
-
-        cylinder.parent = box;
-        box.parent = this.tank;
-        box.position.y = this.tank.position.y + 1;
-
-        let boxMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
-        boxMaterial.diffuseColor = new BABYLON.Color3.Random;
-        boxMaterial.emissiveColor = new BABYLON.Color3.Random;
-        box.material = boxMaterial;
-
-        let cylinderMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
-        cylinderMaterial.diffuseColor = new BABYLON.Color3.Random;
-        cylinderMaterial.emissiveColor = new BABYLON.Color3.Random;
-        cylinder.material = cylinderMaterial;
-
-        cylinder.position.z = this.tank.position.z + 2;
-        cylinder.rotation.x = Math.PI / 2;
-        cylinder.move = () => {
-            //tank.position.z += -1; // speed should be in unit/s, and depends on
-            // deltaTime !
-
-            // if we want to move while taking into account collision detections
-            // collision uses by default "ellipsoids"
-
-            let yMovement = 0;
-            let zMovement = 0;
-
-            if (cylinder.position.y > 2) {
-                zMovement = 0;
-                yMovement = -2;
-            }
-
-            if (this.inputStates.fireLeft) {
-
-                box.rotation.y -= 0.01;
-                box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
-            }
-            if (this.inputStates.fireRight) {
-
-                box.rotation.y += 0.01;
-                box.frontVector = new BABYLON.Vector3(Math.sin(box.rotation.y), 0, Math.cos(box.rotation.y));
-            }
-        }
-    }
-
     createBounder() {
         const bounderOptions = {
-            height: 5,
-            depth: 7,
-            width: 7
+            diameter: 7,
+            segments: 30
         };
 
-        this.bounder = new BABYLON.MeshBuilder.CreateBox("bounderTank", bounderOptions, this.scene);
+        this.bounder = new BABYLON.MeshBuilder.CreateSphere("bounderTank", bounderOptions, this.scene);
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
-        this.bounder.position = new BABYLON.Vector3(20, 2, 20);
-        // bounder.position = this.tank.position.clone();
-
-        // console.log("in creation");
-        bounderMaterial.alpha = .4;
-        this.bounder.material = bounderMaterial;
-        this.bounder.material.diffuseColor = new BABYLON.Color3.Random();
+        this.bounder.position = this.tank.position.clone();
+        this.bounder.visibility = false;
         this.bounder.checkCollisions = true;
-        // bounder.material.wireframe = true;
-        // bounder.parent = this.tank;
 
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
-            BABYLON.PhysicsImpostor.BoxImpostor, {
-                mass: 100,
-                friction: 1,
-                restitution: 0.8
+            BABYLON.PhysicsImpostor.SphereImpostor, {
+                mass: 10,
+                friction: .2,
+                restitution: .6
             },
             this.scene
         );
 
         this.bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
         // return bounder;
+    }
+
+    skillAttract() {
+        if (!this.skills["attract"] && this.inputStates.space) {
+            console.log("attract");
+
+            this.skills["attract"] = true;
+            setTimeout(() => {
+                this.skills["attract"] = false;
+            }, 2000);
+            for (let i = 0; i < this.scene.sphereList.length; i++) {
+                let sphere = this.scene.sphereList[i];
+                sphere.attract();
+            }
+        }
+    }
+
+    skillPushAway() {
+        if (!this.skills["pushAway"] && this.inputStates.shift) {
+            this.skills["pushAway"] = true;
+            setTimeout(() => {
+                this.skills["pushAway"] = false;
+            }, 2000);
+            for (let i = 0; i < this.scene.sphereList.length; i++) {
+                let sphere = this.scene.sphereList[i];
+                sphere.pushAway();
+            }
+        }
+    }
+
+    activateEvents() {
+        this.moveTank();
+        this.skillAttract();
+        this.skillPushAway();
     }
 
     moveTank() {
@@ -135,12 +104,17 @@ class Tank {
             this.zMovement = 0;
             this.yMovement = -2;
         }
-
         if (this.inputStates.up) {
-            this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(this.tank.speed, this.tank.speed, this.tank.speed));
+            this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
+                this.bounder.physicsImpostor.getLinearVelocity().x + Math.sin(this.bounder.rotation.y),
+                this.bounder.physicsImpostor.getLinearVelocity().y,
+                this.bounder.physicsImpostor.getLinearVelocity().z + Math.cos(this.bounder.rotation.y)));
         }
         if (this.inputStates.down) {
-            this.bounder.moveWithCollisions(this.bounder.frontVector.multiplyByFloats(-this.tank.speed, -this.tank.speed, -this.tank.speed));
+            this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
+                this.bounder.physicsImpostor.getLinearVelocity().x - Math.sin(this.bounder.rotation.y),
+                this.bounder.physicsImpostor.getLinearVelocity().y,
+                this.bounder.physicsImpostor.getLinearVelocity().z - Math.cos(this.bounder.rotation.y)));
         }
         if (this.inputStates.left) {
             this.bounder.rotation.y -= 0.02;
@@ -152,24 +126,13 @@ class Tank {
         }
     }
 
-
-    // moveTurret() {
-    //     if (this.inputStates.fireLeft) {
-    //         this.turret.rotation.y -= 0.01;
-    //         this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
-    //     }
-    //     if (this.inputStates.fireRight) {
-    //         this.turret.rotation.y += 0.01;
-    //         this.turret.frontVector = new BABYLON.Vector3(Math.sin(this.turret.rotation.y), 0, Math.cos(this.turret.rotation.y));
-    //     }
-    // }
-
     tankEvent() {
         this.inputStates.left = false;
         this.inputStates.right = false;
         this.inputStates.up = false;
         this.inputStates.down = false;
         this.inputStates.space = false;
+        this.inputStates.shift = false;
 
         this.inputStates.fireLeft = false;
         this.inputStates.fireRight = false;
@@ -188,6 +151,8 @@ class Tank {
                 this.inputStates.down = true;
             } else if (event.key === " ") {
                 this.inputStates.space = true;
+            } else if (event.key === "Shift") {
+                this.inputStates.shift = true;
             }
         }, false);
 
@@ -202,6 +167,8 @@ class Tank {
                 this.inputStates.down = false;
             } else if (event.key === " ") {
                 this.inputStates.space = false;
+            } else if (event.key === "Shift") {
+                this.inputStates.shift = false;
             }
         }, false);
 

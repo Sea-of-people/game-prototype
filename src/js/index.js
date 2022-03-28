@@ -27,13 +27,21 @@ function startGame() {
 
     assetsManager.onFinish = function (tasks) {
         // let debugCamera = createDebugCamera(scene, canvas);
-        let camera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
-        scene.activeCamera = camera;
+        
         createGUI(scene);
         // scene.activeCamera = debugCamera;
         tank = new Tank(scene);
         let trigger = scene.getMeshByName("Trigger1");
         setTriggerProperties(trigger);
+
+        let camera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
+        scene.activeCamera = camera;
+
+        setTimeout(() => {
+            let camera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
+            scene.activeCamera = camera;
+        }, 200)
+        
 
         console.log("Starting game...");
         engine.runRenderLoop(() => {
@@ -115,6 +123,13 @@ function modifySettings() {
     window.addEventListener("resize", () => {
         engine.resize();
     });
+
+    window.addEventListener('keypress', (event) => {
+        if ((event.key === "c") || (event.key === "C")) {
+            let camera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
+            scene.activeCamera = camera;
+        }
+    })
 
     document.addEventListener("pointerlockchange", () => {
         let element = document.pointerLockElement || null;

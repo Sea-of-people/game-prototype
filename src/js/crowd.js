@@ -23,7 +23,7 @@ class Sphere {
             this.sphere,
             BABYLON.PhysicsImpostor.SphereImpostor,
             {
-                mass: 3,
+                mass: 100,
                 restitution: 0.9,
                 gravity: new BABYLON.Vector3(0, -9.81, 0),
             },

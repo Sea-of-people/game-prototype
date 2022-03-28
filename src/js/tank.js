@@ -45,7 +45,7 @@ class Tank {
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
             BABYLON.PhysicsImpostor.SphereImpostor, {
-                mass: 10,
+                mass: 150,
                 friction: .2,
                 restitution: .6
             },
@@ -134,12 +134,6 @@ class Tank {
         this.inputStates.space = false;
         this.inputStates.shift = false;
 
-        this.inputStates.fireLeft = false;
-        this.inputStates.fireRight = false;
-        this.inputStates.fireUp = false;
-        this.inputStates.fireDown = false;
-        this.inputStates.fireSpace = false;
-
         window.addEventListener('keydown', (event) => {
             if ((event.key === "q") || (event.key === "Q")) {
                 this.inputStates.left = true;
@@ -172,34 +166,7 @@ class Tank {
             }
         }, false);
 
-        window.addEventListener('keydown', (event) => {
-            if ((event.key === "ArrowLeft")) {
-                this.inputStates.fireLeft = true;
-            } else if ((event.key === "ArrowUp")) {
-                this.inputStates.fireUp = true;
-            } else if ((event.key === "ArrowRight")) {
-                this.inputStates.fireRight = true;
-            } else if ((event.key === "ArrowDown")) {
-                this.inputStates.fireDown = true;
-            } else if (event.key === " ") {
-                this.inputStates.fireSpace = true;
-            }
-        }, false);
-
-        //if the key will be released, change the states object
-        window.addEventListener('keyup', (event) => {
-            if ((event.key === "ArrowLeft")) {
-                this.inputStates.fireLeft = false;
-            } else if ((event.key === "ArrowUp")) {
-                this.inputStates.fireUp = false;
-            } else if ((event.key === "ArrowRight")) {
-                this.inputStates.fireRight = false;
-            } else if ((event.key === "ArrowDown")) {
-                this.inputStates.fireDown = false;
-            } else if (event.key === " ") {
-                this.inputStates.fireSpace = false;
-            }
-        }, false);
+       
     }
 
 }

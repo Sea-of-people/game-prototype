@@ -61,6 +61,7 @@ function createScene(engine, canvas) {
 
     scene.enablePhysics(
         new BABYLON.Vector3(0, -9.81, 0)
+        // new AmmoJSPlugin()
     );
 
     scene.collisionsEnabled = true;
@@ -126,7 +127,7 @@ function createDebugCamera(scene, canvas) {
  */
 function createFollowCamera(scene, target) {
 
-    let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
+    let camera = new BABYLON.FollowCamera("tankFollowCamera", new BABYLON.Vector3(0, 50, 0), scene, target);
 
     camera.radius = 150; // how far from the object to follow
     camera.heightOffset = 180; // how high above the object to place the camera

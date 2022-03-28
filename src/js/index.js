@@ -36,7 +36,8 @@ function startGame() {
         setTriggerProperties(trigger);
 
         console.log("Starting game...");
-        engine.runRenderLoop(() => {
+        scene.executeWhenReady(
+            () => engine.runRenderLoop(() => {
             scene.gui.scoreText.text = scene.gui.scoreText.baseText + scene.score;
             if (scene.isGenerating && scene.sphereList.length < MAX_SPAWN) {
                 scene.sphereList.push(
@@ -62,7 +63,7 @@ function startGame() {
 
             tank.activateEvents();
             scene.render();
-        });
+        }));
     };
 
     assetsManager.load();

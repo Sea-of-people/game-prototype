@@ -45,7 +45,7 @@ class Tank {
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
             BABYLON.PhysicsImpostor.SphereImpostor, {
-                mass: 150,
+                mass: 100,
                 friction: .2,
                 restitution: .6
             },

@@ -65,8 +65,8 @@ class Sphere {
         let direction = tank.position.subtract(this.sphere.position);
         let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
         let dir = direction.normalize();
-        dir.x *= 150;
-        dir.z *= 150;
+        dir.x *= 5000;
+        dir.z *= 5000;
         if (distance < 70) {
             this.sphere.physicsImpostor.applyImpulse(
                 dir,
@@ -81,8 +81,8 @@ class Sphere {
         let direction = tank.position.subtract(this.sphere.position);
         let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
         let dir = direction.normalize();
-        dir.x *= 150;
-        dir.z *= 150;
+        dir.x *= 5000;
+        dir.z *= 5000;
         dir = new BABYLON.Vector3(-dir.x, dir.y, -dir.z)
         if (distance < 70) {
             this.sphere.physicsImpostor.applyImpulse(

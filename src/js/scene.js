@@ -61,7 +61,6 @@ function createScene(engine, canvas) {
 
     scene.enablePhysics(
         new BABYLON.Vector3(0, -9.81, 0)
-        // new AmmoJSPlugin()
     );
 
     scene.collisionsEnabled = true;

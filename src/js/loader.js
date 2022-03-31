@@ -67,6 +67,8 @@ function loadTasks(assetsManager, scene) {
         let meshes = task.loadedMeshes;
         for (let i = 0; i < meshes.length; i++) {
             // avoid rescaling body because of auto rescaling from other meshes
+            // meshes[i].visibility = 0;
+
             if (meshes[i].name === "BB8_Body1" || meshes[i].name === "BB8_Body2") {
 
             } else {

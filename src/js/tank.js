@@ -14,10 +14,14 @@ class Tank {
         this.createBounder();
         this.tankEvent();
         this.bounder.tankMesh = this.tank;
+        this._speed = 10;
+        this.nextSpeed = new BABYLON.Vector3.Zero();
+        this.speed = new BABYLON.Vector3.Zero();
     }
 
     createTank() {
         this.tank = this.scene.getMeshByName("BB_Unit");
+        // this.tank.physicsImpostor = new BABYLON.PhysicsImpostor(this.tank, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0});
 
         this.scene.sphereList = [];
 
@@ -25,8 +29,9 @@ class Tank {
         console.log(spawnTank.position);
         this.tank.position = spawnTank.position.clone();
         this.tank.position.y -= .2;
-        this.tank.speed = 0.4;
+
         this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
+
     }
 
     createBounder() {
@@ -39,18 +44,27 @@ class Tank {
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
         this.bounder.position = this.tank.position.clone();
-        this.bounder.visibility = false;
+        // this.tank.visibility = false;
         this.bounder.checkCollisions = true;
 
+        this.bounder.showRotation = true;
+        this.bounder.showBoundingBox = true;
+        this.bounder.color = new BABYLON.Color3(1, 0, 1)
         this.bounder.physicsImpostor = new BABYLON.PhysicsImpostor(
             this.bounder,
             BABYLON.PhysicsImpostor.SphereImpostor, {
                 mass: 100,
-                friction: .2,
-                restitution: .6
+                friction: 0.0,
+                restitution: .6,
+                nativeOptions: {linearDamping: 0.95, angularDamping: 0.95}
             },
             this.scene
         );
+        this.bounder.physicsImpostor.executeNativeFunction(function (world, body) {
+            body.fixedRotation = true;
+            body.updateMassProperties();
+
+        });
 
         this.bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
         // return bounder;
@@ -104,17 +118,30 @@ class Tank {
             this.zMovement = 0;
             this.yMovement = -2;
         }
+
         if (this.inputStates.up) {
-            this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
-                this.bounder.physicsImpostor.getLinearVelocity().x + Math.sin(this.bounder.rotation.y),
-                this.bounder.physicsImpostor.getLinearVelocity().y,
-                this.bounder.physicsImpostor.getLinearVelocity().z + Math.cos(this.bounder.rotation.y)));
+            this.nextSpeed.x = this._speed;
+            this.speed = BABYLON.Vector3.Lerp(this.speed, this.nextSpeed, 0.1);
+
+            // this.bounder.physicsImpostor.setAngularVelocity(this.bounder.frontVector.multiplyByFloats(this.speed, this.speed, this.speed));
+
+            // this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
+            //     this.bounder.physicsImpostor.getLinearVelocity().x + Math.sin(this.bounder.rotation.y),
+            //     this.bounder.physicsImpostor.getLinearVelocity().y,
+            //     this.bounder.physicsImpostor.getLinearVelocity().z + Math.cos(this.bounder.rotation.y)));
+            this.bounder.moveWithCollisions(this.speed);
+
         }
         if (this.inputStates.down) {
+            this.nextSpeed.x = -this._speed;
+
+            // this.bounder.physicsImpostor.setAngularVelocity(this.bounder.frontVector.multiplyByFloats(-this.speed, -this.speed, -this.speed));
+            // this.bounder.physicsImpostor.setAngularVelocity(this.bounder.frontVector.multiplyByFloats(-this.speed, -this.speed, -this.speed));
             this.bounder.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(
-                this.bounder.physicsImpostor.getLinearVelocity().x - Math.sin(this.bounder.rotation.y),
+                (this.bounder.physicsImpostor.getLinearVelocity().x - Math.sin(this.bounder.rotation.y),
                 this.bounder.physicsImpostor.getLinearVelocity().y,
-                this.bounder.physicsImpostor.getLinearVelocity().z - Math.cos(this.bounder.rotation.y)));
+                this.bounder.physicsImpostor.getLinearVelocity().z - Math.cos(this.bounder.rotation.y))));
+            // this.bounder.moveWithCollisions(this.speed);
         }
         if (this.inputStates.left) {
             this.bounder.rotation.y -= 0.02;

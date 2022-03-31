@@ -27,7 +27,7 @@ function startGame() {
 
     assetsManager.onFinish = function (tasks) {
         // let debugCamera = createDebugCamera(scene, canvas);
-        
+
         createGUI(scene);
         // scene.activeCamera = debugCamera;
         tank = new Tank(scene);

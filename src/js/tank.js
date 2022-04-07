@@ -1,32 +1,35 @@
-class Tank {
-    /**
-     *
-     * @param {BABYLON.Scene} scene
-     */
+export default class Hero {
+
     constructor(scene) {
         this.scene = scene;
         this.inputStates = {};
+        this.bounder = null;
+        this.heroMesh = null;
         this.skills = {
             "pushAway": false,
             "attract": false
-        }
-        this.createTank();
+        };
+
+
+        this.createHero();
         this.createBounder();
-        this.tankEvent();
-        this.bounder.tankMesh = this.tank;
+        this.heroEvent();
     }
 
-    createTank() {
-        this.tank = this.scene.getMeshByName("BB_Unit");
+    createHero() {
+        let heroMeshOptions = {
+            height: 6,
+            width: 8,
+            depth: 6
+        }
+        this.heroMesh = new BABYLON.MeshBuilder.CreateBox("hero", heroMeshOptions, this.scene);
 
-        this.scene.sphereList = [];
-
-        let spawnTank = this.scene.getMeshByName("SpawnTank");
-        console.log(spawnTank.position);
-        this.tank.position = spawnTank.position.clone();
-        this.tank.position.y -= .2;
-        this.tank.speed = 0.4;
-        this.tank.frontVector = new BABYLON.Vector3(0, 0, 1);
+        let spawnHero = this.scene.getMeshByName("SpawnTank");
+        console.log('spawn :', spawnHero)
+        this.heroMesh.position = spawnHero.position.clone();
+        this.heroMesh.position.y -= .2;
+        this.heroMesh.speed = 0.4;
+        this.heroMesh.frontVector = new BABYLON.Vector3(0, 0, 1);
     }
 
     createBounder() {
@@ -38,7 +41,7 @@ class Tank {
         this.bounder = new BABYLON.MeshBuilder.CreateSphere("bounderTank", bounderOptions, this.scene);
         let bounderMaterial = new BABYLON.StandardMaterial("bounderTankMaterial", this.scene);
 
-        this.bounder.position = this.tank.position.clone();
+        this.bounder.position = this.heroMesh.position.clone();
         this.bounder.visibility = false;
         this.bounder.checkCollisions = true;
 
@@ -53,7 +56,6 @@ class Tank {
         );
 
         this.bounder.frontVector = new BABYLON.Vector3(0, 0, 1);
-        // return bounder;
     }
 
     skillAttract() {
@@ -84,17 +86,11 @@ class Tank {
         }
     }
 
-    activateEvents() {
-        this.moveTank();
-        this.skillAttract();
-        this.skillPushAway();
-    }
-
-    moveTank() {
+    moveHero() {
         if (!this.bounder) return;
 
-        this.tank.position = this.bounder.position.clone();
-        this.tank.rotation = this.bounder.rotation.clone();
+        this.heroMesh.position = this.bounder.position.clone();
+        this.heroMesh.rotation = this.bounder.rotation.clone();
 
         this.xMovement = 0;
         this.yMovement = 0;
@@ -126,19 +122,19 @@ class Tank {
         }
     }
 
-    tankEvent() {
+    activateHeroEvents() {
+        this.moveHero();
+        this.skillAttract();
+        this.skillPushAway();
+    }
+
+    heroEvent() {
         this.inputStates.left = false;
         this.inputStates.right = false;
         this.inputStates.up = false;
         this.inputStates.down = false;
         this.inputStates.space = false;
         this.inputStates.shift = false;
-
-        this.inputStates.fireLeft = false;
-        this.inputStates.fireRight = false;
-        this.inputStates.fireUp = false;
-        this.inputStates.fireDown = false;
-        this.inputStates.fireSpace = false;
 
         window.addEventListener('keydown', (event) => {
             if ((event.key === "q") || (event.key === "Q")) {
@@ -171,37 +167,5 @@ class Tank {
                 this.inputStates.shift = false;
             }
         }, false);
-
-        window.addEventListener('keydown', (event) => {
-            if ((event.key === "ArrowLeft")) {
-                this.inputStates.fireLeft = true;
-            } else if ((event.key === "ArrowUp")) {
-                this.inputStates.fireUp = true;
-            } else if ((event.key === "ArrowRight")) {
-                this.inputStates.fireRight = true;
-            } else if ((event.key === "ArrowDown")) {
-                this.inputStates.fireDown = true;
-            } else if (event.key === " ") {
-                this.inputStates.fireSpace = true;
-            }
-        }, false);
-
-        //if the key will be released, change the states object
-        window.addEventListener('keyup', (event) => {
-            if ((event.key === "ArrowLeft")) {
-                this.inputStates.fireLeft = false;
-            } else if ((event.key === "ArrowUp")) {
-                this.inputStates.fireUp = false;
-            } else if ((event.key === "ArrowRight")) {
-                this.inputStates.fireRight = false;
-            } else if ((event.key === "ArrowDown")) {
-                this.inputStates.fireDown = false;
-            } else if (event.key === " ") {
-                this.inputStates.fireSpace = false;
-            }
-        }, false);
     }
-
 }
-
-export default Tank;

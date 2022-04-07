@@ -1,7 +1,8 @@
 import Tank from "./tank.js";
-import {createFollowCamera, createScene, createGUI} from "./scene.js";
+import {createFollowCamera, Scene} from "./scene.js";
 import generateCrowd from "./crowd.js";
 import loadAssets from "./loader.js";
+import Hero from "./tank.js";
 
 let canvas;
 let engine;
@@ -15,7 +16,7 @@ window.onload = startGame;
 function startGame() {
     canvas = document.querySelector("#myCanvas");
     engine = new BABYLON.Engine(canvas, true);
-    scene = createScene(engine, canvas);
+    scene = new Scene(engine);
 
     scene.gameOver = false;
 
@@ -29,9 +30,9 @@ function startGame() {
         // let debugCamera = createDebugCamera(scene, canvas);
         let camera = createFollowCamera(scene, scene.getMeshByName("BB8_Body2"));
         scene.activeCamera = camera;
-        createGUI(scene);
+        // createGUI(scene);
         // scene.activeCamera = debugCamera;
-        tank = new Tank(scene);
+        tank = new Hero(scene);
         let trigger = scene.getMeshByName("Trigger1");
         setTriggerProperties(trigger);
 
